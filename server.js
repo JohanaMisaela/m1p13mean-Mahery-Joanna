@@ -4,7 +4,9 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-// import authRoutes from "./modules/auth/authRoutes.js";
+dotenv.config();
+
+import authRoutes from "./modules/auth/auth.routes.js";
 // import adminRoutes from "./modules/admin/adminRoutes.js";
 // import boutiqueRoutes from "./modules/boutique/boutiqueRoutes.js";
 // import userRoutes from "./modules/user/userRoutes.js";
@@ -14,7 +16,6 @@ import { swaggerSetup } from "./core/config/swagger.js";
 
 // import { errorHandler } from "./core/middlewares/errorHandler.js";
 
-dotenv.config();
 connectDB();
 
 const app = express();
@@ -24,7 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/boutique", boutiqueRoutes);
 // app.use("/api/user", userRoutes);
