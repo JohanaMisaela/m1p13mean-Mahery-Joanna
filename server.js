@@ -7,9 +7,8 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 import authRoutes from "./modules/auth/auth.routes.js";
-// import adminRoutes from "./modules/admin/adminRoutes.js";
-// import boutiqueRoutes from "./modules/boutique/boutiqueRoutes.js";
-// import userRoutes from "./modules/user/userRoutes.js";
+import userRoutes from "./modules/user/user.routes.js";
+import addressRoutes from "./modules/address/userAddress.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
@@ -26,9 +25,9 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
-// app.use("/api/admin", adminRoutes);
-// app.use("/api/boutique", boutiqueRoutes);
-// app.use("/api/user", userRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/addresses", addressRoutes);
+
 
 swaggerSetup(app);
 

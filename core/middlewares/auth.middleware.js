@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../../modules/auth/auth.model.js";
+import userModel from "../../modules/user/user.model.js";
 
 export const protect = (roles = []) => async (req, res, next) => {
     let token;
@@ -15,7 +15,7 @@ export const protect = (roles = []) => async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await User.findById(decoded.id);
+        const user = await userModel.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
@@ -35,4 +35,10 @@ export const protect = (roles = []) => async (req, res, next) => {
     } catch (err) {
         res.status(401).json({ message: "Invalid token" });
     }
+};
+export const authorize = (...roles) => (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
 };

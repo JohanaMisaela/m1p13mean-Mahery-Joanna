@@ -27,6 +27,8 @@ const router = Router();
  *             properties:
  *               name:
  *                 type: string
+ *               surname:
+ *                 type: string
  *               email:
  *                 type: string
  *               password:
@@ -34,6 +36,19 @@ const router = Router();
  *               role:
  *                 type: string
  *                 enum: [admin, boutique, user]
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   zip:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *                   isDefault:
+ *                     type: boolean
  *     responses:
  *       201:
  *         description: User created

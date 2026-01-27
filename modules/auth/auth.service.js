@@ -1,19 +1,30 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "./auth.model.js";
+import userModel from "../user/user.model.js";
+import userAddressModel from "../address/userAddress.model.js";
 
-export const createUser = async ({ name, email, password, role }) => {
-    const exists = await User.findOne({ email });
-    if (exists) throw new Error("Email already used");
+export const createUser = async ({ name, email, password, role, address, surname }) => {
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await userModel.create({ name, email, password: hashed, role, surname });
 
-    const hash = await bcrypt.hash(password, 10);
+    let defaultAddress = null;
 
-    const user = await User.create({ name, email, password: hash, role });
-    return user;
+    if (address) {
+        defaultAddress = await userAddressModel.create({
+            user: user._id,
+            ...address,
+            isDefault: true
+        });
+
+        user.defaultAddress = defaultAddress._id;
+        await user.save();
+    }
+
+    return { user, defaultAddress };
 };
 
 export const authenticateUser = async ({ email, password }) => {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await userModel.findOne({ email }).select("+password");
     if (!user) throw new Error("Invalid credentials");
 
     const match = await bcrypt.compare(password, user.password);
