@@ -9,6 +9,7 @@ dotenv.config();
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import addressRoutes from "./modules/address/userAddress.routes.js";
+import shopRoutes from "./modules/shop/shop.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
@@ -27,6 +28,7 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/addresses", addressRoutes);
+app.use("/api/shop", shopRoutes);
 
 
 swaggerSetup(app);

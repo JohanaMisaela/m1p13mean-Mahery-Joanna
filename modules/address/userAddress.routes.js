@@ -28,7 +28,7 @@ const router = Router();
  *       200:
  *         description: Array of addresses
  */
-router.get("/addresses", protect(), getAddresses);
+router.get("/", protect(), getAddresses);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.get("/addresses", protect(), getAddresses);
  *       200:
  *         description: Created address
  */
-router.post("/addresses", protect(), addAddress);
+router.post("/", protect(), addAddress);
 
 /**
  * @swagger
@@ -96,7 +96,7 @@ router.post("/addresses", protect(), addAddress);
  *       200:
  *         description: Updated address
  */
-router.put("/addresses/:id", protect(), updateAddress);
+router.put("/:id", protect(), updateAddress);
 
 /**
  * @swagger
@@ -117,5 +117,5 @@ router.put("/addresses/:id", protect(), updateAddress);
  *       200:
  *         description: Address deleted
  */
-router.delete("/addresses/:id", protect(), deleteAddress);
+router.delete("/:id", protect(), deleteAddress);
 export default router;
