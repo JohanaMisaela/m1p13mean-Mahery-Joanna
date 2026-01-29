@@ -24,8 +24,8 @@ export const updateAddress = async (addressId, data) => {
     return address;
 };
 
-export const deleteAddress = async (addressId) => {
-    const address = await UserAddress.findByIdAndUpdate(addressId, { isActive: false }, { new: true });
+export const updateAddressStatus = async (addressId, isActive) => {
+    const address = await UserAddress.findByIdAndUpdate(addressId, { isActive }, { new: true });
     if (!address) throw new Error("Address not found");
 
     const user = await User.findById(address.user);

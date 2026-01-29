@@ -25,7 +25,7 @@ export const updateAddress = async (req, res, next) => {
     }
 };
 
-export const deleteAddress = async (req, res, next) => {
+export const updateStatus = async (req, res, next) => {
     try {
         const addressToCheck = await userAddressService.getAddressById(req.params._id);
         if (!addressToCheck) return res.status(404).json({ message: "Address not found" });
@@ -34,8 +34,9 @@ export const deleteAddress = async (req, res, next) => {
             return res.status(403).json({ message: "Not authorized" });
         }
 
-        const address = await userAddressService.deleteAddress(req.params._id);
-        res.json({ message: "Address deleted", addressId: address._id });
+        const { isActive } = req.body;
+        const address = await userAddressService.updateAddressStatus(req.params._id, isActive);
+        res.json({ message: "Address status updated", address });
     } catch (err) {
         next(err);
     }

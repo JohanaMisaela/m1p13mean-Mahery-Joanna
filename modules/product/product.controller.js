@@ -9,6 +9,7 @@ export const create = async (req, res, next) => {
         }
 
         const shopExists = await shopService.getShopById(shop);
+        console.log(shopExists);
         if (!shopExists) {
             return res.status(404).json({ message: "Shop not found" });
         }

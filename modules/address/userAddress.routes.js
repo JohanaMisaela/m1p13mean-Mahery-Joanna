@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
     addAddress,
     updateAddress,
-    deleteAddress,
+    updateStatus,
     getAddresses,
 } from "./userAddress.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
@@ -100,10 +100,10 @@ router.put("/:_id", protect(), updateAddress);
 
 /**
  * @swagger
- * /api/addresses/{id}:
- *   delete:
- *     summary: Delete an address
- *     tags: [User]
+ * /api/addresses/{id}/status:
+ *   patch:
+ *     summary: Update address status
+ *     tags: [UserAddress]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -113,9 +113,18 @@ router.put("/:_id", protect(), updateAddress);
  *           type: string
  *         required: true
  *         description: Address ID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [isActive]
+ *             properties:
+ *               isActive:
+ *                 type: boolean
  *     responses:
  *       200:
- *         description: Address deleted
+ *         description: Address status updated
  */
-router.delete("/:_id", protect(), deleteAddress);
+router.patch("/:_id/status", protect(), updateStatus);
 export default router;

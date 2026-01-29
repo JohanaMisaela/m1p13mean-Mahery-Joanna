@@ -36,5 +36,5 @@ export const authenticateUser = async ({ email, password }) => {
 
 export const generateToken = (id) => {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET missing");
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
+    return jwt.sign({ _id: id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
 };
