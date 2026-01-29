@@ -96,7 +96,7 @@ router.post("/", protect(), addAddress);
  *       200:
  *         description: Updated address
  */
-router.put("/:id", protect(), updateAddress);
+router.put("/:_id", protect(), updateAddress);
 
 /**
  * @swagger
@@ -117,5 +117,5 @@ router.put("/:id", protect(), updateAddress);
  *       200:
  *         description: Address deleted
  */
-router.delete("/:id", protect(), deleteAddress);
+router.delete("/:_id", protect(), deleteAddress);
 export default router;

@@ -45,9 +45,12 @@ export const getAllUsers = async () => {
     return User.find().select("-password").populate("defaultAddress");
 };
 
-export const deleteUserById = async (id) => {
-    const user = await User.findByIdAndDelete(id);
+export const updateUserStatus = async (userId, isActive) => {
+    const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
+
+    user.isActive = isActive;
+    await user.save();
     return user;
 };
 

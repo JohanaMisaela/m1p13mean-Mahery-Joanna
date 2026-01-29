@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
         password: { type: String, required: true, select: false },
         role: { type: String, enum: ["admin", "boutique", "user"], default: "user" },
         defaultAddress: { type: mongoose.Schema.Types.ObjectId, ref: "UserAddress" },
+        isActive: { type: Boolean, default: true },
     },
     { timestamps: true }
 );

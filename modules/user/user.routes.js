@@ -5,7 +5,7 @@ import {
     updatePassword,
     changeRole,
     listUsers,
-    deleteUser,
+    updateStatus,
 } from "./user.controller.js";
 import { protect, authorize } from "../../core/middlewares/auth.middleware.js";
 
@@ -125,24 +125,28 @@ router.get("/all", protect(), authorize("admin"), listUsers);
 
 /**
  * @swagger
- * /api/user/delete/{id}:
- *   delete:
- *     summary: Delete a user by id (admin only)
+ * /api/user/update-status:
+ *   put:
+ *     summary: Update user status (admin or self)
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: User ID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, isActive]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               isActive:
+ *                 type: boolean
  *     responses:
  *       200:
- *         description: User deleted
+ *         description: Status updated
  */
-router.delete("/delete/:id", protect(), authorize("admin"), deleteUser);
+router.put("/update-status", protect(), updateStatus);
 
 
 

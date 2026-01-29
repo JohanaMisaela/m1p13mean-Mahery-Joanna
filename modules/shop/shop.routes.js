@@ -4,7 +4,6 @@ import {
     getAll,
     getOne,
     update,
-    remove,
     favorite,
     updateStatus
 } from "./shop.controller.js";
@@ -130,13 +129,13 @@ router.get("/", getAll);
  *       200:
  *         description: Shop details
  */
-router.get("/:id", getOne);
+router.get("/:_id", getOne);
 
 /**
  * @swagger
  * /api/shop/{id}:
  *   put:
- *     summary: Update a shop (admin only)
+ *     summary: Update a shop (owner and admin)
  *     tags: [Shop]
  *     security:
  *       - bearerAuth: []
@@ -195,7 +194,7 @@ router.get("/:id", getOne);
  *       200:
  *         description: Shop updated
  */
-router.put("/:id", protect(), update);
+router.put("/:_id", protect(), update);
 
 /**
  * @swagger
@@ -226,28 +225,7 @@ router.put("/:id", protect(), update);
  *       200:
  *         description: Shop status updated
  */
-router.patch("/:id/status", protect("admin"), updateStatus);
-
-/**
- * @swagger
- * /api/shop/{id}:
- *   delete:
- *     summary: Delete a shop (admin only)
- *     tags: [Shop]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: Shop ID
- *     responses:
- *       200:
- *         description: Shop deleted
- */
-router.delete("/:id", protect("admin"), remove);
+router.patch("/:_id/status", protect('admin'), updateStatus);
 
 /**
  * @swagger

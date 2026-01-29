@@ -15,7 +15,7 @@ export const protect = (roles = []) => async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await userModel.findById(decoded.id);
+        const user = await userModel.findById(decoded._id);
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
@@ -25,7 +25,7 @@ export const protect = (roles = []) => async (req, res, next) => {
         }
 
         req.user = {
-            id: user._id,
+            _id: user._id,
             name: user.name,
             email: user.email,
             role: user.role,

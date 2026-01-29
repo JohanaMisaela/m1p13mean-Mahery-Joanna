@@ -2,6 +2,9 @@ import * as shopService from "./shop.service.js";
 
 export const create = async (req, res, next) => {
     try {
+        if (req.user.role !== "admin") {
+            req.body.owner = req.user._id;
+        }
         const shop = await shopService.createShop(req.body);
         res.status(201).json(shop);
     } catch (err) {
@@ -23,7 +26,7 @@ export const getAll = async (req, res, next) => {
 
 export const getOne = async (req, res, next) => {
     try {
-        const shop = await shopService.getShopById(req.params.id);
+        const shop = await shopService.getShopById(req.params._id);
         res.status(200).json(shop);
     } catch (err) {
         next(err);
@@ -32,7 +35,7 @@ export const getOne = async (req, res, next) => {
 
 export const update = async (req, res, next) => {
     try {
-        const shop = await shopService.getShopById(req.params.id);
+        const shop = await shopService.getShopById(req.params._id);
         if (!shop) return res.status(404).json({ message: "Shop not found" });
 
         if (shop.owner.toString() !== req.user._id.toString() && req.user.role !== "admin") {
@@ -43,21 +46,14 @@ export const update = async (req, res, next) => {
             delete req.body.isActive;
         }
 
-        const updatedShop = await shopService.updateShop(req.params.id, req.body);
+        const updatedShop = await shopService.updateShop(req.params._id, req.body);
         res.status(200).json(updatedShop);
     } catch (err) {
         next(err);
     }
 };
 
-export const remove = async (req, res, next) => {
-    try {
-        await shopService.deleteShop(req.params.id);
-        res.status(200).json({ message: "Shop deleted" });
-    } catch (err) {
-        next(err);
-    }
-};
+
 
 export const favorite = async (req, res, next) => {
     try {
@@ -74,9 +70,21 @@ export const favorite = async (req, res, next) => {
 
 export const updateStatus = async (req, res, next) => {
     try {
+        const shop = await shopService.getShopById(req.params._id);
+        if (!shop) return res.status(404).json({ message: "Shop not found" });
+
+        if (shop.owner._id.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
         const { isActive } = req.body;
-        const shop = await shopService.updateShop(req.params.id, { isActive });
-        res.status(200).json(shop);
+        // If owner tries to activate, maybe restrict? 
+        // For now, allow owner to toggle their shop status if that's the requirement.
+        // Or if 'activate' means 'approve', then only admin.
+        // Assuming 'activate' means 'open/close' for owner, 'ban/unban' for admin.
+
+        const updatedShop = await shopService.updateShop(req.params._id, { isActive });
+        res.status(200).json(updatedShop);
     } catch (err) {
         next(err);
     }
