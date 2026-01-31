@@ -15,25 +15,32 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/reports:
+ * /api/reports/{targetType}/{targetId}:
  *   post:
  *     summary: Create a report
  *     tags: [Reports]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: targetType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [product, shop]
+ *       - in: path
+ *         name: targetId
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [targetType, targetId, reason]
+ *             required: [reason]
  *             properties:
- *               targetType:
- *                 type: string
- *                 enum: [product, shop]
- *               targetId:
- *                 type: string
  *               reason:
  *                 type: string
  *                 enum: [scam, wrong_info, prohibited, other]
@@ -43,7 +50,7 @@ const router = express.Router();
  *       201:
  *         description: Report created successfully
  */
-router.post("/", protect(), validate(validation.createReportSchema), controller.createReport);
+router.post("/:targetType/:targetId", protect(), validate(validation.createReportSchema), controller.createReport);
 
 /**
  * @swagger

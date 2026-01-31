@@ -1,4 +1,5 @@
 import * as shopService from "./shop.service.js";
+import * as categoryService from "../category/category.service.js";
 import asyncHandler from "../../core/utils/asyncHandler.js";
 
 export const create = asyncHandler(async (req, res) => {
@@ -6,6 +7,13 @@ export const create = asyncHandler(async (req, res) => {
         req.body.owner = req.params.ownerId;
     } else {
         req.body.owner = req.user._id;
+    }
+
+    // Categories find-or-create logic
+    if (req.body.categories && Array.isArray(req.body.categories)) {
+        req.body.categories = await Promise.all(
+            req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "shop"))
+        );
     }
 
     const shop = await shopService.createShop(req.body);
@@ -37,8 +45,17 @@ export const update = asyncHandler(async (req, res) => {
         return res.status(403).json({ message: "Not authorized" });
     }
 
-    if ("isActive" in req.body && req.user.role !== "admin") {
-        delete req.body.isActive;
+    // Restrictions: Only admin can change owner, mallBoxNumber or isActive
+    const restrictedFields = ["owner", "mallBoxNumber", "isActive"];
+    if (req.user.role !== "admin") {
+        restrictedFields.forEach(field => delete req.body[field]);
+    }
+
+    // Categories find-or-create logic
+    if (req.body.categories && Array.isArray(req.body.categories)) {
+        req.body.categories = await Promise.all(
+            req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "shop"))
+        );
     }
 
     const updatedShop = await shopService.updateShop(req.params.id, req.body);

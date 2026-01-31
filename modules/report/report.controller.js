@@ -2,7 +2,12 @@ import * as reportService from "./report.service.js";
 import asyncHandler from "../../core/utils/asyncHandler.js";
 
 export const createReport = asyncHandler(async (req, res) => {
-    const report = await reportService.createReport(req.user._id, req.body);
+    const { targetType, targetId } = req.params;
+    const report = await reportService.createReport(req.user._id, {
+        ...req.body,
+        targetType,
+        targetId
+    });
     res.status(201).json(report);
 });
 

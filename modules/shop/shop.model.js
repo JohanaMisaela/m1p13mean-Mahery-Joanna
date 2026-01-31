@@ -8,7 +8,7 @@ const shopSchema = new mongoose.Schema(
         description: { type: String },
         owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         mallBoxNumber: { type: String, required: true },
-        categories: [{ type: String }],
+        categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
         phone: { type: String },
         email: { type: String },
         socialLinks: {

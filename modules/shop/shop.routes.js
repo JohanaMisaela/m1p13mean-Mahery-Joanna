@@ -41,16 +41,52 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name]
+ *             required: [name, mallBoxNumber]
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Ma Boutique Fashion"
+ *               mallBoxNumber:
+ *                 type: string
+ *                 example: "B-102"
  *               logo:
  *                 type: string
+ *                 example: "https://example.com/logo.png"
  *               slogan:
  *                 type: string
+ *                 example: "Le style à petit prix"
  *               description:
  *                 type: string
+ *                 example: "Vente de vêtements et accessoires tendance"
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: "Array of category names or ObjectIds. Missing names will be auto-created."
+ *                 example: ["Mode", "Accessoires"]
+ *               phone:
+ *                 type: string
+ *                 example: "+212 600 000 000"
+ *               email:
+ *                 type: string
+ *                 example: "contact@maboutique.com"
+ *               socialLinks:
+ *                 type: object
+ *                 properties:
+ *                   facebook: { type: string, example: "facebook.com/maboutique" }
+ *                   instagram: { type: string, example: "instagr.am/maboutique" }
+ *                   tiktok: { type: string, example: "tiktok.com/@maboutique" }
+ *               openingHours:
+ *                 type: string
+ *                 example: "Lun-Sam: 09:00 - 20:00"
+ *               tags:
+ *                 type: array
+ *                 items: { type: string }
+ *                 example: ["fashion", "tendance", "chic"]
+ *               gallery:
+ *                 type: array
+ *                 items: { type: string }
+ *                 example: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"]
  *     responses:
  *       201:
  *         description: Shop created
@@ -63,6 +99,18 @@ router.post("/:ownerId", protect(["admin"]), validate(validation.createShopSchem
  *   get:
  *     summary: Get all shops
  *     tags: [Shop]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema: { type: string }
+ *         example: "Mode"
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         example: "Fashion"
+ *       - in: query
+ *         name: isActive
+ *         schema: { type: string, enum: [true, false] }
  *     responses:
  *       200:
  *         description: List of shops
@@ -92,9 +140,9 @@ router.get("/my/favorites", protect(), getMyFavorites);
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
  *         required: true
+ *         schema: { type: string }
+ *         example: "65af123456789abcd123456"
  *     responses:
  *       200:
  *         description: Shop details
@@ -112,9 +160,9 @@ router.get("/:id", getOne);
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
  *         required: true
+ *         schema: { type: string }
+ *         example: "65af123456789abcd123456"
  *     requestBody:
  *       required: true
  *       content:
@@ -122,16 +170,25 @@ router.get("/:id", getOne);
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
- *               logo:
- *                 type: string
- *               slogan:
- *                 type: string
- *               description:
- *                 type: string
- *               isActive:
- *                 type: boolean
+ *               name: { type: string, example: "Nouveau Nom Boutique" }
+ *               logo: { type: string, example: "https://example.com/new-logo.png" }
+ *               slogan: { type: string, example: "Nouveau Slogan" }
+ *               description: { type: string, example: "Nouvelle description" }
+ *               categories: { type: array, items: { type: string }, example: ["Nouvelle Cat"] }
+ *               phone: { type: string, example: "+212 600 111 222" }
+ *               email: { type: string, example: "new@maboutique.com" }
+ *               socialLinks:
+ *                 type: object
+ *                 properties:
+ *                   facebook: { type: string, example: "fb.com/new" }
+ *                   instagram: { type: string, example: "ig.com/new" }
+ *                   tiktok: { type: string, example: "tt.com/new" }
+ *               openingHours: { type: string, example: "Lun-Dim: 10:00 - 22:00" }
+ *               tags: { type: array, items: { type: string }, example: ["new", "tags"] }
+ *               gallery: { type: array, items: { type: string }, example: ["https://example.com/new1.jpg"] }
+ *               isActive: { type: boolean, description: "Admin only", example: true }
+ *               mallBoxNumber: { type: string, description: "Admin only", example: "A-12" }
+ *               owner: { type: string, description: "Admin only", example: "65af..." }
  *     responses:
  *       200:
  *         description: Shop updated
@@ -149,9 +206,8 @@ router.put("/:id", protect(), validate(validation.updateShopSchema), update);
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
  *         required: true
+ *         schema: { type: string }
  *     requestBody:
  *       required: true
  *       content:
@@ -160,8 +216,7 @@ router.put("/:id", protect(), validate(validation.updateShopSchema), update);
  *             type: object
  *             required: [isActive]
  *             properties:
- *               isActive:
- *                 type: boolean
+ *               isActive: { type: boolean }
  *     responses:
  *       200:
  *         description: Status updated
@@ -179,9 +234,8 @@ router.patch("/:id/status", protect(['admin']), updateStatus);
  *     parameters:
  *       - in: path
  *         name: shopId
- *         schema:
- *           type: string
  *         required: true
+ *         schema: { type: string }
  *     requestBody:
  *       required: true
  *       content:
@@ -190,8 +244,7 @@ router.patch("/:id/status", protect(['admin']), updateStatus);
  *             type: object
  *             required: [favorite]
  *             properties:
- *               favorite:
- *                 type: boolean
+ *               favorite: { type: boolean }
  *     responses:
  *       200:
  *         description: Favorite toggled

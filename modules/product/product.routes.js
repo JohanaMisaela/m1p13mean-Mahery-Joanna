@@ -62,6 +62,7 @@ const router = Router();
  *                   type: string
  *               category:
  *                 type: string
+ *                 description: "Category name or ObjectId. If name doesn't exist, it will be created."
  *                 example: "Vêtements"
  *               tags:
  *                 type: array
@@ -84,27 +85,33 @@ router.post("/:shopId", protect(), validate(validation.createProductSchema), cre
  *         name: category
  *         schema:
  *           type: string
+ *         example: "65af..."
  *       - in: query
  *         name: shop
  *         schema:
  *           type: string
+ *         example: "65af..."
  *       - in: query
  *         name: minPrice
  *         schema:
  *           type: number
+ *         example: 1000
  *       - in: query
  *         name: maxPrice
  *         schema:
  *           type: number
+ *         example: 50000
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
+ *         example: "Nike"
  *       - in: query
  *         name: isOnSale
  *         schema:
  *           type: string
  *           enum: [true, false]
+ *         example: "true"
  *     responses:
  *       200:
  *         description: List of products
@@ -137,6 +144,7 @@ router.get("/my/favorites", protect(), getMyFavorites);
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af123456789abcd123456"
  *     responses:
  *       200:
  *         description: Product detail
@@ -159,6 +167,7 @@ router.get("/:id", getOne);
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af123456789abcd123456"
  *     requestBody:
  *       required: true
  *       content:
@@ -168,22 +177,30 @@ router.get("/:id", getOne);
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Nouveau Nom Produit"
  *               description:
  *                 type: string
+ *                 example: "Nouvelle description plus détaillée"
  *               price:
  *                 type: number
+ *                 example: 30000
  *               stock:
  *                 type: number
+ *                 example: 50
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example: ["https://example.com/new-img.jpg"]
  *               category:
  *                 type: string
+ *                 description: "Category name or ObjectId"
+ *                 example: "Sport"
  *               tags:
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example: ["chaussures", "run", "nike"]
  *     responses:
  *       200:
  *         description: Product updated

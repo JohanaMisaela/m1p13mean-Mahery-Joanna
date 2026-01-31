@@ -5,8 +5,12 @@ export const createShop = async (data) => {
 };
 
 export const getShops = async (filters = {}, query = {}) => {
-    const { search } = query;
+    const { search, category } = query;
     const finalFilter = { ...filters };
+
+    if (category) {
+        finalFilter.categories = category;
+    }
 
     if (search) {
         finalFilter.$or = [
@@ -16,15 +20,21 @@ export const getShops = async (filters = {}, query = {}) => {
         ];
     }
 
-    return await Shop.find(finalFilter).populate("owner", "name surname email").populate("favoritedBy", "name surname");
+    return await Shop.find(finalFilter)
+        .populate("owner", "name surname email")
+        .populate("categories")
+        .populate("favoritedBy", "name surname");
 };
 
 export const getShopById = async (id) => {
-    return await Shop.findById(id).populate("owner", "name surname email").populate("favoritedBy", "name surname");
+    return await Shop.findById(id)
+        .populate("owner", "name surname email")
+        .populate("categories")
+        .populate("favoritedBy", "name surname");
 };
 
 export const updateShop = async (id, data) => {
-    return await Shop.findByIdAndUpdate(id, data, { new: true });
+    return await Shop.findByIdAndUpdate(id, data, { new: true }).populate("categories");
 };
 
 export const deleteShop = async (id) => {

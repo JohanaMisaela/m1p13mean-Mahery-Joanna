@@ -7,7 +7,6 @@ export const createPromotionSchema = z.object({
         discountPercentage: z.number().min(1).max(100),
         startDate: z.string().datetime(),
         endDate: z.string().datetime(),
-        shopId: z.string().min(1, "Shop ID is required"),
         products: z.array(z.string()).optional(),
     }).refine((data) => new Date(data.startDate) < new Date(data.endDate), {
         message: "End date must be after start date",

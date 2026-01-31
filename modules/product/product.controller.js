@@ -1,5 +1,6 @@
 import * as productService from "./product.service.js";
 import * as shopService from "../shop/shop.service.js";
+import * as categoryService from "../category/category.service.js";
 import asyncHandler from "../../core/utils/asyncHandler.js";
 
 export const create = asyncHandler(async (req, res) => {
@@ -20,6 +21,11 @@ export const create = asyncHandler(async (req, res) => {
         req.user.role !== "admin"
     ) {
         return res.status(403).json({ message: "You are not authorized to add products to this shop" });
+    }
+
+    // Category find-or-create logic
+    if (req.body.category) {
+        req.body.category = await categoryService.findOrCreateCategory(req.body.category, "product");
     }
 
     const product = await productService.createProduct({
@@ -57,6 +63,11 @@ export const update = asyncHandler(async (req, res) => {
     // isActive réservé admin
     if ("isActive" in req.body && req.user.role !== "admin") {
         delete req.body.isActive;
+    }
+
+    // Category find-or-create logic
+    if (req.body.category) {
+        req.body.category = await categoryService.findOrCreateCategory(req.body.category, "product");
     }
 
     const updated = await productService.updateProduct(req.params.id, req.body);

@@ -3,7 +3,7 @@ import * as shopService from "../shop/shop.service.js";
 import asyncHandler from "../../core/utils/asyncHandler.js";
 
 export const create = asyncHandler(async (req, res) => {
-    const { shopId } = req.body;
+    const { shopId } = req.params;
 
     // Authorization check
     if (req.user.role === "shop") {

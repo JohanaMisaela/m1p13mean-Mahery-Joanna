@@ -15,19 +15,25 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/promotions:
+ * /api/promotions/{shopId}:
  *   post:
  *     summary: Create a new promotion (Shop Owner or Admin)
  *     tags: [Promotions]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: shopId
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, discountPercentage, startDate, endDate, shopId]
+ *             required: [name, discountPercentage, startDate, endDate]
  *             properties:
  *               name:
  *                 type: string
@@ -46,8 +52,6 @@ const router = express.Router();
  *                 type: string
  *                 format: date-time
  *                 example: "2026-11-30T23:59:59Z"
- *               shopId:
- *                 type: string
  *               products:
  *                 type: array
  *                 items:
@@ -56,7 +60,7 @@ const router = express.Router();
  *       201:
  *         description: Promotion created successfully
  */
-router.post("/", protect(["shop", "admin"]), validate(validation.createPromotionSchema), controller.create);
+router.post("/:shopId", protect(["shop", "admin"]), validate(validation.createPromotionSchema), controller.create);
 
 /**
  * @swagger
@@ -72,6 +76,7 @@ router.post("/", protect(["shop", "admin"]), validate(validation.createPromotion
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af..."
  *     requestBody:
  *       required: true
  *       content:
@@ -79,12 +84,12 @@ router.post("/", protect(["shop", "admin"]), validate(validation.createPromotion
  *           schema:
  *             type: object
  *             properties:
- *               name: { type: string }
- *               description: { type: string }
- *               discountPercentage: { type: number }
- *               startDate: { type: string, format: date-time }
- *               endDate: { type: string, format: date-time }
- *               isActive: { type: boolean }
+ *               name: { type: string, example: "Fête des Mères" }
+ *               description: { type: string, example: "-20% sur toute la catégorie Bijoux" }
+ *               discountPercentage: { type: number, example: 20 }
+ *               startDate: { type: string, format: date-time, example: "2026-05-20T00:00:00Z" }
+ *               endDate: { type: string, format: date-time, example: "2026-05-30T23:59:59Z" }
+ *               isActive: { type: boolean, example: true }
  *     responses:
  *       200:
  *         description: Promotion updated
@@ -105,6 +110,7 @@ router.put("/:id", protect(["shop", "admin"]), validate(validation.updatePromoti
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af..."
  *     requestBody:
  *       required: true
  *       content:
@@ -117,6 +123,7 @@ router.put("/:id", protect(["shop", "admin"]), validate(validation.updatePromoti
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example: ["65af...", "65b0..."]
  *     responses:
  *       200:
  *         description: Products added to promotion
@@ -137,6 +144,7 @@ router.patch("/:id/products/add", protect(["shop", "admin"]), validate(validatio
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af..."
  *     requestBody:
  *       required: true
  *       content:
@@ -149,6 +157,7 @@ router.patch("/:id/products/add", protect(["shop", "admin"]), validate(validatio
  *                 type: array
  *                 items:
  *                   type: string
+ *                 example: ["65af..."]
  *     responses:
  *       200:
  *         description: Products removed from promotion
@@ -167,6 +176,7 @@ router.patch("/:id/products/remove", protect(["shop", "admin"]), validate(valida
  *         required: true
  *         schema:
  *           type: string
+ *         example: "65af..."
  *     responses:
  *       200:
  *         description: List of shop promotions

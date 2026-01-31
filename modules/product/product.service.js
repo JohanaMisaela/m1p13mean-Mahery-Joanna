@@ -9,7 +9,10 @@ export const getAllProducts = async (query = {}) => {
     const { category, shop, minPrice, maxPrice, search, isOnSale } = query;
     const filter = { isActive: true };
 
-    if (category) filter.category = category;
+    if (category) {
+        // Assume category is passed as an ID
+        filter.category = category;
+    }
     if (shop) filter.shop = shop;
 
     if (minPrice || maxPrice) {
@@ -80,11 +83,12 @@ export const getAllProducts = async (query = {}) => {
 export const getProductById = (id) => {
     return Product.findById(id)
         .populate("shop")
+        .populate("category")
         .populate("createdBy", "name surname");
 };
 
 export const updateProduct = (id, data) => {
-    return Product.findByIdAndUpdate(id, data, { new: true });
+    return Product.findByIdAndUpdate(id, data, { new: true }).populate("category");
 };
 
 export const deleteProduct = (id) => {
