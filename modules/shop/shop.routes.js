@@ -8,6 +8,8 @@ import {
     updateStatus
 } from "./shop.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./shop.validation.js";
 
 const router = Router();
 
@@ -32,66 +34,27 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the shop owner
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, mallBoxNumber]
+ *             required: [name]
  *             properties:
  *               name:
  *                 type: string
- *                 example: "La Belle Mode"
  *               logo:
  *                 type: string
- *                 example: "https://example.com/logo.png"
  *               slogan:
  *                 type: string
- *                 example: "La mode au quotidien"
  *               description:
  *                 type: string
- *                 example: "Boutique de vêtements pour hommes et femmes"
- *               mallBoxNumber:
- *                 type: string
- *                 example: "B12"
- *               categories:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["vêtements", "accessoires"]
- *               phone:
- *                 type: string
- *                 example: "+261341234567"
- *               email:
- *                 type: string
- *                 example: "contact@labellemode.mg"
- *               socialLinks:
- *                 type: object
- *                 properties:
- *                   facebook:
- *                     type: string
- *                   instagram:
- *                     type: string
- *                   tiktok:
- *                     type: string
- *               openingHours:
- *                 type: string
- *                 example: "Lun-Ven 9h-18h"
- *               isActive:
- *                 type: boolean
- *                 example: true
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["mode", "tendance"]
  *     responses:
  *       201:
- *         description: Shop created successfully
+ *         description: Shop created
  */
-router.post("/:ownerId", protect("admin"), create);
+router.post("/:ownerId", protect(["admin"]), validate(validation.createShopSchema), create);
 
 /**
  * @swagger
@@ -99,17 +62,6 @@ router.post("/:ownerId", protect("admin"), create);
  *   get:
  *     summary: Get all shops
  *     tags: [Shop]
- *     parameters:
- *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *         description: Filter by category
- *       - in: query
- *         name: isActive
- *         schema:
- *           type: boolean
- *         description: Filter by active status
  *     responses:
  *       200:
  *         description: List of shops
@@ -128,12 +80,11 @@ router.get("/", getAll);
  *         schema:
  *           type: string
  *         required: true
- *         description: Shop ID
  *     responses:
  *       200:
  *         description: Shop details
  */
-router.get("/:_id", getOne);
+router.get("/:id", getOne);
 
 /**
  * @swagger
@@ -149,7 +100,6 @@ router.get("/:_id", getOne);
  *         schema:
  *           type: string
  *         required: true
- *         description: Shop ID
  *     requestBody:
  *       required: true
  *       content:
@@ -165,40 +115,13 @@ router.get("/:_id", getOne);
  *                 type: string
  *               description:
  *                 type: string
- *               owner:
- *                 type: string
- *               mallBoxNumber:
- *                 type: string
- *               categories:
- *                 type: array
- *                 items:
- *                   type: string
- *               phone:
- *                 type: string
- *               email:
- *                 type: string
- *               socialLinks:
- *                 type: object
- *                 properties:
- *                   facebook:
- *                     type: string
- *                   instagram:
- *                     type: string
- *                   tiktok:
- *                     type: string
- *               openingHours:
- *                 type: string
  *               isActive:
  *                 type: boolean
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
  *     responses:
  *       200:
  *         description: Shop updated
  */
-router.put("/:_id", protect(), update);
+router.put("/:id", protect(), validate(validation.updateShopSchema), update);
 
 /**
  * @swagger
@@ -214,7 +137,6 @@ router.put("/:_id", protect(), update);
  *         schema:
  *           type: string
  *         required: true
- *         description: Shop ID
  *     requestBody:
  *       required: true
  *       content:
@@ -227,9 +149,9 @@ router.put("/:_id", protect(), update);
  *                 type: boolean
  *     responses:
  *       200:
- *         description: Shop status updated
+ *         description: Status updated
  */
-router.patch("/:_id/status", protect('admin'), updateStatus);
+router.patch("/:id/status", protect(['admin']), updateStatus);
 
 /**
  * @swagger
@@ -245,7 +167,6 @@ router.patch("/:_id/status", protect('admin'), updateStatus);
  *         schema:
  *           type: string
  *         required: true
- *         description: Shop ID
  *     requestBody:
  *       required: true
  *       content:
@@ -256,10 +177,9 @@ router.patch("/:_id/status", protect('admin'), updateStatus);
  *             properties:
  *               favorite:
  *                 type: boolean
- *                 example: true
  *     responses:
  *       200:
- *         description: Shop updated with favorite
+ *         description: Favorite toggled
  */
 router.post("/:shopId/favorite", protect(), favorite);
 

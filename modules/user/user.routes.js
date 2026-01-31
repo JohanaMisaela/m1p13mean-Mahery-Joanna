@@ -9,6 +9,8 @@ import {
     getUserById,
 } from "./user.controller.js";
 import { protect, authorize } from "../../core/middlewares/auth.middleware.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./user.validation.js";
 
 const router = Router();
 
@@ -29,7 +31,7 @@ const router = Router();
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Current user info
+ *         description: Current user profile
  */
 router.get("/me", protect(), getMe);
 
@@ -43,7 +45,7 @@ router.get("/me", protect(), getMe);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Array of users
+ *         description: List of all users
  */
 router.get("/all", protect(), authorize("admin"), listUsers);
 
@@ -63,7 +65,7 @@ router.get("/all", protect(), authorize("admin"), listUsers);
  *           type: string
  *     responses:
  *       200:
- *         description: User info
+ *         description: User found
  */
 router.get("/:id", protect(), authorize("admin"), getUserById);
 
@@ -89,9 +91,9 @@ router.get("/:id", protect(), authorize("admin"), getUserById);
  *                 type: string
  *     responses:
  *       200:
- *         description: Updated user info
+ *         description: Profile updated
  */
-router.put("/update", protect(), updateProfile);
+router.put("/update", protect(), validate(validation.updateProfileSchema), updateProfile);
 
 /**
  * @swagger
@@ -114,9 +116,9 @@ router.put("/update", protect(), updateProfile);
  *                 type: string
  *     responses:
  *       200:
- *         description: Password updated
+ *         description: Password changed
  */
-router.put("/change-password", protect(), updatePassword);
+router.put("/change-password", protect(), validate(validation.updatePasswordSchema), updatePassword);
 
 /**
  * @swagger
@@ -139,14 +141,14 @@ router.put("/change-password", protect(), updatePassword);
  *             type: object
  *             required: [role]
  *             properties:
- *               role:  
+ *               role:
  *                 type: string
- *                 enum: [admin, shop, user]
+ *                 enum: [admin, shop, user, buyer]
  *     responses:
  *       200:
  *         description: Role updated
  */
-router.put("/change-role/:userId", protect(), authorize("admin"), changeRole);
+router.put("/change-role/:userId", protect(), authorize("admin"), validate(validation.changeRoleSchema), changeRole);
 
 /**
  * @swagger
@@ -175,8 +177,6 @@ router.put("/change-role/:userId", protect(), authorize("admin"), changeRole);
  *       200:
  *         description: Status updated
  */
-router.put("/update-status/:userId", protect(), updateStatus);
-
-
+router.put("/update-status/:userId", protect(), validate(validation.updateStatusSchema), updateStatus);
 
 export default router;

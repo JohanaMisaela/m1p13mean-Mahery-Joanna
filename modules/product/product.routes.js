@@ -8,6 +8,8 @@ import {
     favorite,
 } from "./product.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./product.validation.js";
 
 const router = Router();
 
@@ -57,9 +59,6 @@ const router = Router();
  *                 type: array
  *                 items:
  *                   type: string
- *                 example:
- *                   - "https://example.com/img1.jpg"
- *                   - "https://example.com/img2.jpg"
  *               category:
  *                 type: string
  *                 example: "Vêtements"
@@ -67,12 +66,11 @@ const router = Router();
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["mode", "homme"]
  *     responses:
  *       201:
  *         description: Product created
  */
-router.post("/:shopId", protect(), create);
+router.post("/:shopId", protect(), validate(validation.createProductSchema), create);
 
 /**
  * @swagger
@@ -85,22 +83,22 @@ router.post("/:shopId", protect(), create);
  *         name: category
  *         schema:
  *           type: string
- *         example: "Vêtements"
  *       - in: query
  *         name: shop
  *         schema:
  *           type: string
- *         example: "65af123456789abcd123456"
  *       - in: query
  *         name: minPrice
  *         schema:
  *           type: number
- *         example: 10000
  *       - in: query
  *         name: maxPrice
  *         schema:
  *           type: number
- *         example: 50000
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of products
@@ -119,14 +117,13 @@ router.get("/", getAll);
  *         required: true
  *         schema:
  *           type: string
- *         example: "65af123456789abcd123456"
  *     responses:
  *       200:
  *         description: Product detail
  *       404:
  *         description: Product not found
  */
-router.get("/:_id", getOne);
+router.get("/:id", getOne);
 
 /**
  * @swagger
@@ -173,7 +170,7 @@ router.get("/:_id", getOne);
  *       403:
  *         description: Forbidden
  */
-router.put("/:_id", protect(), update);
+router.put("/:id", protect(), validate(validation.updateProductSchema), update);
 
 /**
  * @swagger
@@ -189,7 +186,6 @@ router.put("/:_id", protect(), update);
  *         schema:
  *           type: string
  *         required: true
- *         description: Product ID
  *     requestBody:
  *       required: true
  *       content:
@@ -205,8 +201,7 @@ router.put("/:_id", protect(), update);
  *       200:
  *         description: Shop updated with favorite
  */
-router.post("/:productId/favorite", protect(), favorite);
-
+router.post("/:productId/favorite", protect(), validate(validation.favoriteProductSchema), favorite);
 
 /**
  * @swagger
@@ -237,7 +232,6 @@ router.post("/:productId/favorite", protect(), favorite);
  *       200:
  *         description: Product status updated
  */
-router.patch("/:_id/activate", protect(), activate);
-
+router.patch("/:id/activate", protect(), validate(validation.setProductActiveSchema), activate);
 
 export default router;

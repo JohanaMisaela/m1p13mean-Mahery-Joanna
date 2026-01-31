@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { register, login, logout } from "./auth.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./auth.validation.js";
 
 const router = Router();
 
@@ -35,25 +37,12 @@ const router = Router();
  *                 type: string
  *               role:
  *                 type: string
- *                 enum: [admin, shop, user]
- *               address:
- *                 type: object
- *                 properties:
- *                   street:
- *                     type: string
- *                   city:
- *                     type: string
- *                   zip:
- *                     type: string
- *                   country:
- *                     type: string
- *                   isDefault:
- *                     type: boolean
+ *                 enum: [admin, shop, user, buyer]
  *     responses:
  *       201:
  *         description: User created
  */
-router.post("/register", register);
+router.post("/register", validate(validation.registerSchema), register);
 
 /**
  * @swagger
@@ -77,7 +66,7 @@ router.post("/register", register);
  *       200:
  *         description: Logged in
  */
-router.post("/login", login);
+router.post("/login", validate(validation.loginSchema), login);
 
 /**
  * @swagger
