@@ -14,7 +14,7 @@ export const updateAddress = async (req, res, next) => {
         const addressToCheck = await userAddressService.getAddressById(req.params._id);
         if (!addressToCheck) return res.status(404).json({ message: "Address not found" });
 
-        if (addressToCheck.user.toString() !== req.user._id) {
+        if (addressToCheck.user.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Not authorized" });
         }
 
@@ -30,7 +30,7 @@ export const updateStatus = async (req, res, next) => {
         const addressToCheck = await userAddressService.getAddressById(req.params._id);
         if (!addressToCheck) return res.status(404).json({ message: "Address not found" });
 
-        if (addressToCheck.user.toString() !== req.user._id) {
+        if (addressToCheck.user.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Not authorized" });
         }
 
@@ -45,6 +45,8 @@ export const updateStatus = async (req, res, next) => {
 export const getAddresses = async (req, res, next) => {
     try {
         const addresses = await userAddressService.getAddressesByUser(req.user._id);
+        console.log(addresses, req.user);
+
         res.json(addresses);
     } catch (err) {
         next(err);

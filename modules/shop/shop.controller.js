@@ -38,7 +38,11 @@ export const update = async (req, res, next) => {
         const shop = await shopService.getShopById(req.params._id);
         if (!shop) return res.status(404).json({ message: "Shop not found" });
 
-        if (shop.owner.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        if (!shop.owner) {
+            return res.status(500).json({ message: "Shop data invalid: Owner not found." });
+        }
+
+        if (shop.owner._id.toString() !== req.user._id.toString() && req.user.role !== "admin") {
             return res.status(403).json({ message: "Not authorized" });
         }
 
@@ -72,6 +76,10 @@ export const updateStatus = async (req, res, next) => {
     try {
         const shop = await shopService.getShopById(req.params._id);
         if (!shop) return res.status(404).json({ message: "Shop not found" });
+
+        if (!shop.owner) {
+            return res.status(500).json({ message: "Shop data invalid: Owner not found." });
+        }
 
         if (shop.owner._id.toString() !== req.user._id.toString() && req.user.role !== "admin") {
             return res.status(403).json({ message: "Not authorized" });

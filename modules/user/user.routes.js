@@ -6,6 +6,7 @@ import {
     changeRole,
     listUsers,
     updateStatus,
+    getUserById,
 } from "./user.controller.js";
 import { protect, authorize } from "../../core/middlewares/auth.middleware.js";
 
@@ -102,7 +103,7 @@ router.put("/change-password", protect(), updatePassword);
  *                 type: string
  *               role:
  *                 type: string
- *                 enum: [admin, boutique, user]
+ *                 enum: [admin, shop, user]
  *     responses:
  *       200:
  *         description: Role updated
@@ -122,6 +123,25 @@ router.put("/change-role", protect(), authorize("admin"), changeRole);
  *         description: Array of users
  */
 router.get("/all", protect(), authorize("admin"), listUsers);
+/**
+ * @swagger
+ * /api/user/:id:
+ *   get:
+ *     summary: Get user by id (admin only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User info
+ */
+router.get("/:id", protect(), authorize("admin"), getUserById);
 
 /**
  * @swagger

@@ -1,4 +1,5 @@
 import UserAddress from "../address/userAddress.model.js";
+import User from "../user/user.model.js";
 
 export const addAddress = async (userId, data) => {
     const address = await UserAddress.create({ user: userId, ...data });
@@ -38,7 +39,7 @@ export const updateAddressStatus = async (addressId, isActive) => {
 };
 
 export const getAddressesByUser = async (userId) => {
-    return UserAddress.find({ user: userId, isActive: true });
+    return UserAddress.find({ user: userId, isActive: { $ne: false } });
 };
 
 export const getAddressById = async (id) => {

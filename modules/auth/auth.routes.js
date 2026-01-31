@@ -35,7 +35,7 @@ const router = Router();
  *                 type: string
  *               role:
  *                 type: string
- *                 enum: [admin, boutique, user]
+ *                 enum: [admin, shop, user]
  *               address:
  *                 type: object
  *                 properties:

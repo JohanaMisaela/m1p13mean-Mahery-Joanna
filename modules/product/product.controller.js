@@ -9,9 +9,13 @@ export const create = async (req, res, next) => {
         }
 
         const shopExists = await shopService.getShopById(shop);
-        console.log(shopExists);
+
         if (!shopExists) {
             return res.status(404).json({ message: "Shop not found" });
+        }
+
+        if (!shopExists.owner) {
+            return res.status(500).json({ message: "Shop data invalid: Owner not found." });
         }
 
         if (
