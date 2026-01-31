@@ -6,6 +6,8 @@ import {
     getAddresses,
 } from "./userAddress.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./address.validation.js";
 
 const router = Router();
 
@@ -24,9 +26,6 @@ const router = Router();
  *     tags: [UserAddress]
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Array of addresses
  */
 router.get("/", protect(), getAddresses);
 
@@ -38,28 +37,8 @@ router.get("/", protect(), getAddresses);
  *     tags: [UserAddress]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [street, city, zip, country]
- *             properties:
- *               street:
- *                 type: string
- *               city:
- *                 type: string
- *               zip:
- *                 type: string
- *               country:
- *                 type: string
- *               isDefault:
- *                 type: boolean
- *     responses:
- *       200:
- *         description: Created address
  */
-router.post("/", protect(), addAddress);
+router.post("/", protect(), validate(validation.addAddressSchema), addAddress);
 
 /**
  * @swagger
@@ -72,31 +51,11 @@ router.post("/", protect(), addAddress);
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: Address ID
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               street:
- *                 type: string
- *               city:
- *                 type: string
- *               zip:
- *                 type: string
- *               country:
- *                 type: string
- *               isDefault:
- *                 type: boolean
- *     responses:
- *       200:
- *         description: Updated address
  */
-router.put("/:_id", protect(), updateAddress);
+router.put("/:id", protect(), validate(validation.updateAddressSchema), updateAddress);
 
 /**
  * @swagger
@@ -109,22 +68,10 @@ router.put("/:_id", protect(), updateAddress);
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: Address ID
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [isActive]
- *             properties:
- *               isActive:
- *                 type: boolean
- *     responses:
- *       200:
- *         description: Address status updated
  */
-router.patch("/:_id/status", protect(), updateStatus);
+router.patch("/:id/status", protect(), validate(validation.updateAddressStatusSchema), updateStatus);
+
 export default router;
