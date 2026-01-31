@@ -1,6 +1,8 @@
 import express from "express";
 import { protect } from "../../core/middlewares/auth.middleware.js";
 import { create, myOrders, shopOrders, changeStatus } from "./order.controller.js";
+import validate from "../../core/middlewares/validate.middleware.js";
+import * as validation from "./order.validation.js";
 
 const router = express.Router();
 
@@ -8,7 +10,7 @@ const router = express.Router();
  * @swagger
  * /api/orders:
  *   post:
- *     summary: Create order
+ *     summary: Create order (Pending status)
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -22,10 +24,8 @@ const router = express.Router();
  *             properties:
  *               shopId:
  *                 type: string
- *                 example: "65af123456789abcd123456"
  *               addressId:
  *                 type: string
- *                 example: "65af987654321fedc654321"
  *               items:
  *                 type: array
  *                 items:
@@ -34,15 +34,13 @@ const router = express.Router();
  *                   properties:
  *                     productId:
  *                       type: string
- *                       example: "65af11223344556677889900"
  *                     quantity:
  *                       type: number
- *                       example: 2
  *     responses:
  *       201:
  *         description: Order created
  */
-router.post("/", protect(), create);
+router.post("/", protect(), validate(validation.createOrderSchema), create);
 
 /**
  * @swagger
@@ -52,9 +50,6 @@ router.post("/", protect(), create);
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of my orders
  */
 router.get("/my", protect(), myOrders);
 
@@ -72,10 +67,6 @@ router.get("/my", protect(), myOrders);
  *         required: false
  *         schema:
  *           type: string
- *         description: Shop ID (required for admin, ignored for shop owner)
- *     responses:
- *       200:
- *         description: List of shop orders
  */
 router.get("/shop", protect(["shop", "admin"]), shopOrders);
 
@@ -84,6 +75,7 @@ router.get("/shop", protect(["shop", "admin"]), shopOrders);
  * /api/orders/{id}/status:
  *   put:
  *     summary: Update order status (shop owner or admin)
+ *     description: Moving to CONFIRMED will deduct stock. CANCELLED is only allowed if current status is PENDING.
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -93,7 +85,6 @@ router.get("/shop", protect(["shop", "admin"]), shopOrders);
  *         required: true
  *         schema:
  *           type: string
- *         description: Order ID
  *     requestBody:
  *       required: true
  *       content:
@@ -104,12 +95,11 @@ router.get("/shop", protect(["shop", "admin"]), shopOrders);
  *             properties:
  *               status:
  *                 type: string
- *                 enum: ["PENDING", "CONFIRMED", "SHIPPED"]
- *                 example: "CONFIRMED"
+ *                 enum: ["PENDING", "CONFIRMED", "SHIPPED", "CANCELLED"]
  *     responses:
  *       200:
  *         description: Order status updated
  */
-router.put("/:id/status", protect(["shop", "admin"]), changeStatus);
+router.put("/:id/status", protect(["shop", "admin"]), validate(validation.updateOrderStatusSchema), changeStatus);
 
 export default router;

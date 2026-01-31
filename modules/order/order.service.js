@@ -11,10 +11,10 @@ export const createOrder = async (userId, shopId, items, addressId) => {
 
     for (const item of items) {
         const product = await Product.findById(item.productId);
-        if (!product) throw new Error("Product not found");
+        if (!product) throw new Error(`Product ${item.productId} not found`);
 
         if (product.stock < item.quantity) {
-            throw new Error("Not enough stock");
+            throw new Error(`Not enough stock for ${product.name}`);
         }
 
         total += product.price * item.quantity;
@@ -24,9 +24,6 @@ export const createOrder = async (userId, shopId, items, addressId) => {
             quantity: item.quantity,
             price: product.price,
         });
-
-        product.stock -= item.quantity;
-        await product.save();
     }
 
     return Order.create({
@@ -35,6 +32,7 @@ export const createOrder = async (userId, shopId, items, addressId) => {
         items: orderItems,
         totalAmount: total,
         shippingAddress: addressId,
+        status: "PENDING"
     });
 };
 
@@ -52,12 +50,34 @@ export const getOrdersByShop = (shopId) => {
         .sort({ createdAt: -1 });
 };
 
-export const updateOrderStatus = (orderId, status) => {
-    return Order.findByIdAndUpdate(
-        orderId,
-        { status },
-        { new: true }
-    );
+export const updateOrderStatus = async (orderId, newStatus) => {
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
+
+    const oldStatus = order.status;
+
+    // RULE: Only PENDING orders can be cancelled
+    if (newStatus === "CANCELLED" && oldStatus !== "PENDING") {
+        throw new Error("Only pending orders can be cancelled");
+    }
+
+    // RULE: Deduct stock only on CONFIRMED from PENDING
+    if (newStatus === "CONFIRMED" && oldStatus === "PENDING") {
+        for (const item of order.items) {
+            const product = await Product.findById(item.product);
+            if (!product) throw new Error(`Product ${item.product} not found`);
+
+            if (product.stock < item.quantity) {
+                throw new Error(`Not enough stock for ${product.name} to confirm order`);
+            }
+
+            product.stock -= item.quantity;
+            await product.save();
+        }
+    }
+
+    order.status = newStatus;
+    return order.save();
 };
 
 export const getOrderById = (id) => {
