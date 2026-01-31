@@ -21,7 +21,8 @@ const shopSchema = new mongoose.Schema(
         tags: [{ type: String }],
         favoritedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         gallery: [{ type: String }],
-        ratings: { type: Number, default: 0 },
+        averageRating: { type: Number, default: 0 },
+        totalRatings: { type: Number, default: 0 },
     },
     { timestamps: true }
 );

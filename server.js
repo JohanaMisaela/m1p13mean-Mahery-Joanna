@@ -13,6 +13,10 @@ import shopRoutes from "./modules/shop/shop.routes.js";
 import productRoutes from "./modules/product/product.routes.js";
 import orderRoutes from "./modules/order/order.routes.js";
 import cartRoutes from "./modules/cart/cart.routes.js";
+import productRankingRoutes from "./modules/productRanking/productRanking.routes.js";
+import shopRankingRoutes from "./modules/shopRanking/shopRanking.routes.js";
+import productCommentRoutes from "./modules/productComment/productComment.routes.js";
+import reportRoutes from "./modules/report/report.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
@@ -35,6 +39,10 @@ app.use("/api/shop", shopRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/product-ranking", productRankingRoutes);
+app.use("/api/shop-ranking", shopRankingRoutes);
+app.use("/api/product-comments", productCommentRoutes);
+app.use("/api/reports", reportRoutes);
 
 swaggerSetup(app);
 
