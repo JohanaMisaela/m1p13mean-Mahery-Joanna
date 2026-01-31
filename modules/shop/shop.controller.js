@@ -2,9 +2,12 @@ import * as shopService from "./shop.service.js";
 
 export const create = async (req, res, next) => {
     try {
-        if (req.user.role !== "admin") {
+        if (req.user.role === "admin") {
+            req.body.owner = req.params.ownerId;
+        } else {
             req.body.owner = req.user._id;
         }
+
         const shop = await shopService.createShop(req.body);
         res.status(201).json(shop);
     } catch (err) {

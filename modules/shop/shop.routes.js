@@ -20,19 +20,26 @@ const router = Router();
 
 /**
  * @swagger
- * /api/shop:
+ * /api/shop/{ownerId}:
  *   post:
  *     summary: Create a new shop (admin only)
  *     tags: [Shop]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: ownerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the shop owner
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, owner, mallBoxNumber]
+ *             required: [name, mallBoxNumber]
  *             properties:
  *               name:
  *                 type: string
@@ -46,9 +53,6 @@ const router = Router();
  *               description:
  *                 type: string
  *                 example: "Boutique de vêtements pour hommes et femmes"
- *               owner:
- *                 type: string
- *                 example: "64d5f3e8a1b2c3d4e5f67890"
  *               mallBoxNumber:
  *                 type: string
  *                 example: "B12"
@@ -87,7 +91,7 @@ const router = Router();
  *       201:
  *         description: Shop created successfully
  */
-router.post("/", protect("admin"), create);
+router.post("/:ownerId", protect("admin"), create);
 
 /**
  * @swagger

@@ -35,6 +35,40 @@ router.get("/me", protect(), getMe);
 
 /**
  * @swagger
+ * /api/user/all:
+ *   get:
+ *     summary: List all users (admin only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of users
+ */
+router.get("/all", protect(), authorize("admin"), listUsers);
+
+/**
+ * @swagger
+ * /api/user/{id}:
+ *   get:
+ *     summary: Get user by id (admin only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User info
+ */
+router.get("/:id", protect(), authorize("admin"), getUserById);
+
+/**
+ * @swagger
  * /api/user/update:
  *   put:
  *     summary: Update user profile
@@ -86,87 +120,62 @@ router.put("/change-password", protect(), updatePassword);
 
 /**
  * @swagger
- * /api/user/change-role:
+ * /api/user/change-role/{userId}:
  *   put:
  *     summary: Change role of a user (admin only)
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [userId, role]
+ *             required: [role]
  *             properties:
- *               userId:
- *                 type: string
- *               role:
+ *               role:  
  *                 type: string
  *                 enum: [admin, shop, user]
  *     responses:
  *       200:
  *         description: Role updated
  */
-router.put("/change-role", protect(), authorize("admin"), changeRole);
+router.put("/change-role/:userId", protect(), authorize("admin"), changeRole);
 
 /**
  * @swagger
- * /api/user/all:
- *   get:
- *     summary: List all users (admin only)
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Array of users
- */
-router.get("/all", protect(), authorize("admin"), listUsers);
-/**
- * @swagger
- * /api/user/:id:
- *   get:
- *     summary: Get user by id (admin only)
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: User info
- */
-router.get("/:id", protect(), authorize("admin"), getUserById);
-
-/**
- * @swagger
- * /api/user/update-status:
+ * /api/user/update-status/{userId}:
  *   put:
  *     summary: Update user status (admin or self)
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [userId, isActive]
+ *             required: [isActive]
  *             properties:
- *               userId:
- *                 type: string
  *               isActive:
  *                 type: boolean
  *     responses:
  *       200:
  *         description: Status updated
  */
-router.put("/update-status", protect(), updateStatus);
+router.put("/update-status/:userId", protect(), updateStatus);
 
 
 
