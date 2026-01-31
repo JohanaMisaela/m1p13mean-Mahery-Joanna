@@ -11,6 +11,7 @@ import userRoutes from "./modules/user/user.routes.js";
 import addressRoutes from "./modules/address/userAddress.routes.js";
 import shopRoutes from "./modules/shop/shop.routes.js";
 import productRoutes from "./modules/product/product.routes.js";
+import orderRoutes from "./modules/order/order.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
@@ -30,6 +31,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 swaggerSetup(app);
 
