@@ -4,8 +4,19 @@ export const createShop = async (data) => {
     return await Shop.create(data);
 };
 
-export const getShops = async (filters = {}) => {
-    return await Shop.find(filters).populate("owner", "name surname email").populate("favoritedBy", "name surname");
+export const getShops = async (filters = {}, query = {}) => {
+    const { search } = query;
+    const finalFilter = { ...filters };
+
+    if (search) {
+        finalFilter.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { tags: { $in: [new RegExp(search, "i")] } },
+        ];
+    }
+
+    return await Shop.find(finalFilter).populate("owner", "name surname email").populate("favoritedBy", "name surname");
 };
 
 export const getShopById = async (id) => {
@@ -38,4 +49,8 @@ export const removeFavorite = async (shopId, userId) => {
 
 export const getShopByOwner = async (ownerId) => {
     return await Shop.findOne({ owner: ownerId });
+};
+
+export const getUserFavorites = async (userId) => {
+    return await Shop.find({ favoritedBy: userId, isActive: true }).sort({ createdAt: -1 });
 };

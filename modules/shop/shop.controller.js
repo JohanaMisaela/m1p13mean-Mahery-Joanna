@@ -16,7 +16,7 @@ export const getAll = asyncHandler(async (req, res) => {
     const filters = {};
     if (req.query.category) filters.categories = req.query.category;
     if (req.query.isActive) filters.isActive = req.query.isActive === "true";
-    const shops = await shopService.getShops(filters);
+    const shops = await shopService.getShops(filters, req.query);
     res.status(200).json(shops);
 });
 
@@ -69,4 +69,9 @@ export const updateStatus = asyncHandler(async (req, res) => {
     const { isActive } = req.body;
     const updatedShop = await shopService.updateShop(req.params.id, { isActive });
     res.status(200).json(updatedShop);
+});
+
+export const getMyFavorites = asyncHandler(async (req, res) => {
+    const shops = await shopService.getUserFavorites(req.user._id);
+    res.json(shops);
 });

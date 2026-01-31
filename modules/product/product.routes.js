@@ -6,6 +6,7 @@ import {
     update,
     activate,
     favorite,
+    getMyFavorites,
 } from "./product.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
 import validate from "../../core/middlewares/validate.middleware.js";
@@ -99,11 +100,30 @@ router.post("/:shopId", protect(), validate(validation.createProductSchema), cre
  *         name: search
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: isOnSale
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
  *     responses:
  *       200:
  *         description: List of products
  */
 router.get("/", getAll);
+
+/**
+ * @swagger
+ * /api/products/my/favorites:
+ *   get:
+ *     summary: Get all my favorite products
+ *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of favorite products
+ */
+router.get("/my/favorites", protect(), getMyFavorites);
 
 /**
  * @swagger

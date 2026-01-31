@@ -95,3 +95,8 @@ export const favorite = asyncHandler(async (req, res) => {
     );
     res.json(updated);
 });
+
+export const getMyFavorites = asyncHandler(async (req, res) => {
+    const products = await productService.getUserFavorites(req.user._id);
+    res.json(products);
+});

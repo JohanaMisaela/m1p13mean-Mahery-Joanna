@@ -5,7 +5,8 @@ import {
     getOne,
     update,
     favorite,
-    updateStatus
+    updateStatus,
+    getMyFavorites
 } from "./shop.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
 import validate from "../../core/middlewares/validate.middleware.js";
@@ -67,6 +68,20 @@ router.post("/:ownerId", protect(["admin"]), validate(validation.createShopSchem
  *         description: List of shops
  */
 router.get("/", getAll);
+
+/**
+ * @swagger
+ * /api/shop/my/favorites:
+ *   get:
+ *     summary: Get all my favorite shops
+ *     tags: [Shop]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of favorite shops
+ */
+router.get("/my/favorites", protect(), getMyFavorites);
 
 /**
  * @swagger

@@ -1,11 +1,12 @@
 import Product from "./product.model.js";
+import Promotion from "../promotion/promotion.model.js";
 
 export const createProduct = (data) => {
     return Product.create(data);
 };
 
-export const getAllProducts = (query = {}) => {
-    const { category, shop, minPrice, maxPrice, search } = query;
+export const getAllProducts = async (query = {}) => {
+    const { category, shop, minPrice, maxPrice, search, isOnSale } = query;
     const filter = { isActive: true };
 
     if (category) filter.category = category;
@@ -21,7 +22,20 @@ export const getAllProducts = (query = {}) => {
         filter.$or = [
             { name: { $regex: search, $options: "i" } },
             { description: { $regex: search, $options: "i" } },
+            { tags: { $in: [new RegExp(search, "i")] } },
         ];
+    }
+
+    if (isOnSale === "true") {
+        const now = new Date();
+        const activePromos = await Promotion.find({
+            isActive: true,
+            startDate: { $lte: now },
+            endDate: { $gte: now }
+        }).select("products");
+
+        const promotedProductIds = activePromos.flatMap(p => p.products);
+        filter._id = { $in: promotedProductIds };
     }
 
     return Product.find(filter)
@@ -52,4 +66,10 @@ export const toggleProductFavorite = (productId, userId, isFavorite) => {
         ? { $addToSet: { favoritedBy: userId } }
         : { $pull: { favoritedBy: userId } };
     return Product.findByIdAndUpdate(productId, update, { new: true });
+};
+
+export const getUserFavorites = (userId) => {
+    return Product.find({ favoritedBy: userId, isActive: true })
+        .populate("shop", "name")
+        .sort({ createdAt: -1 });
 };
