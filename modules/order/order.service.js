@@ -21,9 +21,11 @@ export const createOrder = async (userId, shopId, items, addressId) => {
         // Check for active promotion
         const promotion = await getActiveProductPromotion(product._id);
         let finalPrice = product.price;
+        let appliedPromoId = null;
 
         if (promotion) {
             finalPrice = product.price * (1 - promotion.discountPercentage / 100);
+            appliedPromoId = promotion._id;
         }
 
         total += finalPrice * item.quantity;
@@ -31,8 +33,9 @@ export const createOrder = async (userId, shopId, items, addressId) => {
         orderItems.push({
             product: product._id,
             quantity: item.quantity,
-            price: finalPrice, // Save the actual price paid
-            originalPrice: product.price, // Optional: keep track of original price
+            price: finalPrice,
+            originalPrice: product.price,
+            promotion: appliedPromoId,
         });
     }
 

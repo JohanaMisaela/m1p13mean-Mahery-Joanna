@@ -9,7 +9,6 @@ export const create = asyncHandler(async (req, res) => {
         req.body.owner = req.user._id;
     }
 
-    // Categories find-or-create logic
     if (req.body.categories && Array.isArray(req.body.categories)) {
         req.body.categories = await Promise.all(
             req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "shop"))
@@ -51,7 +50,6 @@ export const update = asyncHandler(async (req, res) => {
         restrictedFields.forEach(field => delete req.body[field]);
     }
 
-    // Categories find-or-create logic
     if (req.body.categories && Array.isArray(req.body.categories)) {
         req.body.categories = await Promise.all(
             req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "shop"))

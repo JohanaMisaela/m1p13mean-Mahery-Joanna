@@ -10,7 +10,6 @@ export const getAllProducts = async (query = {}) => {
     const filter = { isActive: true };
 
     if (category) {
-        // Assume category is passed as an ID
         filter.category = category;
     }
     if (shop) filter.shop = shop;
@@ -54,9 +53,8 @@ export const getAllProducts = async (query = {}) => {
     const products = await Product.find(filter)
         .populate("shop", "name")
         .populate("createdBy", "name surname")
-        .lean(); // Use lean() for easier mapping
+        .lean();
 
-    // Attach active promotion info to each product
     const now = new Date();
     const activePromos = await Promotion.find({
         isActive: true,

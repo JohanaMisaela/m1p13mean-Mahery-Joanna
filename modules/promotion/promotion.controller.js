@@ -5,7 +5,6 @@ import asyncHandler from "../../core/utils/asyncHandler.js";
 export const create = asyncHandler(async (req, res) => {
     const { shopId } = req.params;
 
-    // Authorization check
     if (req.user.role === "shop") {
         const shop = await shopService.getShopByOwner(req.user._id);
         if (!shop || shop._id.toString() !== shopId) {
@@ -24,7 +23,6 @@ export const update = asyncHandler(async (req, res) => {
     const promo = await promotionService.getPromotionById(req.params.id);
     if (!promo) return res.status(404).json({ message: "Promotion not found" });
 
-    // Authorization check
     if (req.user.role === "shop") {
         const shop = await shopService.getShopByOwner(req.user._id);
         if (!shop || promo.shop.toString() !== shop._id.toString()) {
@@ -51,7 +49,6 @@ export const removeProducts = asyncHandler(async (req, res) => {
 export const getShopPromos = asyncHandler(async (req, res) => {
     const shopId = req.params.shopId;
 
-    // Simple get (public or restricted, based on needs - here restricted for owners/admins)
     const promos = await promotionService.getShopPromotions(shopId);
     res.json(promos);
 });

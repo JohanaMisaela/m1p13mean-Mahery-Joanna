@@ -18,6 +18,10 @@ const orderItemSchema = new mongoose.Schema({
     originalPrice: {
         type: Number,
     },
+    promotion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Promotion",
+    },
 });
 
 const orderSchema = new mongoose.Schema(

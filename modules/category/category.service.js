@@ -20,14 +20,12 @@ export const getCategoryByName = async (name, type) => {
 export const findOrCreateCategory = async (input, type) => {
     if (!input) return null;
 
-    // Check if input is a valid ObjectId
     const isValidId = /^[0-9a-fA-F]{24}$/.test(input);
     if (isValidId) {
         const category = await Category.findById(input);
         if (category) return category._id;
     }
 
-    // Otherwise treat as name
     let category = await Category.findOne({ name: input, type });
     if (!category) {
         category = await Category.create({ name: input, type });
