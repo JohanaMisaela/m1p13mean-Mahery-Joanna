@@ -1,5 +1,6 @@
 import Order from "./order.model.js";
 import Product from "../product/product.model.js";
+import { getActiveProductPromotion } from "../promotion/promotion.service.js";
 
 export const createOrder = async (userId, shopId, items, addressId) => {
     if (!items || items.length === 0) {
@@ -17,12 +18,21 @@ export const createOrder = async (userId, shopId, items, addressId) => {
             throw new Error(`Not enough stock for ${product.name}`);
         }
 
-        total += product.price * item.quantity;
+        // Check for active promotion
+        const promotion = await getActiveProductPromotion(product._id);
+        let finalPrice = product.price;
+
+        if (promotion) {
+            finalPrice = product.price * (1 - promotion.discountPercentage / 100);
+        }
+
+        total += finalPrice * item.quantity;
 
         orderItems.push({
             product: product._id,
             quantity: item.quantity,
-            price: product.price,
+            price: finalPrice, // Save the actual price paid
+            originalPrice: product.price, // Optional: keep track of original price
         });
     }
 
