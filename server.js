@@ -12,9 +12,11 @@ import addressRoutes from "./modules/address/userAddress.routes.js";
 import shopRoutes from "./modules/shop/shop.routes.js";
 import productRoutes from "./modules/product/product.routes.js";
 import orderRoutes from "./modules/order/order.routes.js";
+import cartRoutes from "./modules/cart/cart.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
+import errorHandler from "./core/middlewares/error.middleware.js";
 
 
 connectDB();
@@ -32,10 +34,11 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRoutes);
 
 swaggerSetup(app);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
