@@ -4,8 +4,27 @@ export const createProduct = (data) => {
     return Product.create(data);
 };
 
-export const getAllProducts = (filter = {}) => {
-    return Product.find({ isActive: true, ...filter })
+export const getAllProducts = (query = {}) => {
+    const { category, shop, minPrice, maxPrice, search } = query;
+    const filter = { isActive: true };
+
+    if (category) filter.category = category;
+    if (shop) filter.shop = shop;
+
+    if (minPrice || maxPrice) {
+        filter.price = {};
+        if (minPrice) filter.price.$gte = Number(minPrice);
+        if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    if (search) {
+        filter.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+        ];
+    }
+
+    return Product.find(filter)
         .populate("shop", "name")
         .populate("createdBy", "name surname");
 };

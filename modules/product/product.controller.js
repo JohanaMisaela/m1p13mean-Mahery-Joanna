@@ -3,12 +3,12 @@ import * as shopService from "../shop/shop.service.js";
 
 export const create = async (req, res, next) => {
     try {
-        const { shop } = req.body;
-        if (!shop) {
+        const { shopId } = req.params;
+        if (!shopId) {
             return res.status(400).json({ message: "Shop ID is required" });
         }
 
-        const shopExists = await shopService.getShopById(shop);
+        const shopExists = await shopService.getShopById(shopId);
 
         if (!shopExists) {
             return res.status(404).json({ message: "Shop not found" });
@@ -27,6 +27,7 @@ export const create = async (req, res, next) => {
 
         const product = await productService.createProduct({
             ...req.body,
+            shop: shopId,
             createdBy: req.user._id,
         });
         res.status(201).json(product);

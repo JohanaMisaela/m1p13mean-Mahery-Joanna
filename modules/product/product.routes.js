@@ -19,19 +19,26 @@ const router = Router();
 
 /**
  * @swagger
- * /api/products:
+ * /api/products/{shopId}:
  *   post:
  *     summary: Create a product (owner or admin)
  *     tags: [Product]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: shopId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "65af123456789abcd123456"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, price, shop]
+ *             required: [name, price]
  *             properties:
  *               name:
  *                 type: string
@@ -60,14 +67,11 @@ const router = Router();
  *                 items:
  *                   type: string
  *                 example: ["mode", "homme"]
- *               shop:
- *                 type: string
- *                 example: "65af123456789abcd123456"
  *     responses:
  *       201:
  *         description: Product created
  */
-router.post("/", protect(), create);
+router.post("/:shopId", protect(), create);
 
 /**
  * @swagger
