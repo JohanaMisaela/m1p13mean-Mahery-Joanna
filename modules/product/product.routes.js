@@ -132,13 +132,20 @@ router.get("/", getAll);
  * @swagger
  * /api/products/my/favorites:
  *   get:
- *     summary: Get all my favorite products
- *     tags: [Product]
+ *     summary: Get products favorited by current user
+ *     tags: [Products]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
  *     responses:
  *       200:
- *         description: List of favorite products
+ *         description: Paginated list of favorite products
  */
 router.get("/my/favorites", protect(), getMyFavorites);
 

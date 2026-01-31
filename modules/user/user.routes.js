@@ -43,9 +43,16 @@ router.get("/me", protect(), getMe);
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
  *     responses:
  *       200:
- *         description: List of all users
+ *         description: Paginated list of all users
  */
 router.get("/all", protect(), authorize("admin"), listUsers);
 

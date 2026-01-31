@@ -61,9 +61,15 @@ router.post("/:productId", protect(), validate(validation.productCommentSchema),
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
  *     responses:
  *       200:
- *         description: List of comments
+ *         description: Paginated list of comments
  *         content:
  *           application/json:
  *             schema:

@@ -7,8 +7,15 @@ export const getMe = asyncHandler(async (req, res) => {
 });
 
 export const listUsers = asyncHandler(async (req, res) => {
-    const users = await userService.getAllUsers();
-    res.json(users);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await userService.getAllUsers(req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const getUserById = asyncHandler(async (req, res) => {

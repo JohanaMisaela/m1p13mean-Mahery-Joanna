@@ -26,6 +26,16 @@ const router = Router();
  *     tags: [UserAddress]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *     responses:
+ *       200:
+ *         description: Paginated list of user addresses
  */
 router.get("/", protect(), getAddresses);
 

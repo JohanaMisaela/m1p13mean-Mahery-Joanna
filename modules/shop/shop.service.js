@@ -69,6 +69,16 @@ export const getShopByOwner = async (ownerId) => {
     return await Shop.findOne({ owner: ownerId });
 };
 
-export const getUserFavorites = async (userId) => {
-    return await Shop.find({ favoritedBy: userId, isActive: true }).sort({ createdAt: -1 });
+export const getUserFavorites = async (userId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { favoritedBy: userId, isActive: true };
+
+    const total = await Shop.countDocuments(filter);
+    const data = await Shop.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };

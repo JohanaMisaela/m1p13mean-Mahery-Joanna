@@ -176,10 +176,16 @@ router.patch("/:id/products/remove", protect(["shop", "admin"]), validate(valida
  *         required: true
  *         schema:
  *           type: string
- *         example: "65af..."
+ *         example: "65af123456789abcd123456"
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
  *     responses:
  *       200:
- *         description: List of shop promotions
+ *         description: Paginated list of shop promotions
  */
 router.get("/shop/:shopId", controller.getShopPromos);
 

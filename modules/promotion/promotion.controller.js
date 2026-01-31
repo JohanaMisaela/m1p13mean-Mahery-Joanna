@@ -47,8 +47,15 @@ export const removeProducts = asyncHandler(async (req, res) => {
 });
 
 export const getShopPromos = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
     const shopId = req.params.shopId;
 
-    const promos = await promotionService.getShopPromotions(shopId);
-    res.json(promos);
+    const { data, total } = await promotionService.getShopPromotions(shopId, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });

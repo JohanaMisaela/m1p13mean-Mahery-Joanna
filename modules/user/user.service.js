@@ -41,8 +41,18 @@ export const changeUserRole = async (userId, newRole) => {
     return user;
 };
 
-export const getAllUsers = async () => {
-    return User.find().select("-password").populate("defaultAddress");
+export const getAllUsers = async (query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const total = await User.countDocuments();
+    const data = await User.find()
+        .select("-password")
+        .populate("defaultAddress")
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const updateUserStatus = async (userId, isActive) => {

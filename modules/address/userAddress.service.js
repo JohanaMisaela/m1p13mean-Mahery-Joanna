@@ -38,8 +38,17 @@ export const updateAddressStatus = async (addressId, isActive) => {
     return address;
 };
 
-export const getAddressesByUser = async (userId) => {
-    return UserAddress.find({ user: userId, isActive: { $ne: false } });
+export const getAddressesByUser = async (userId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { user: userId, isActive: { $ne: false } };
+
+    const total = await UserAddress.countDocuments(filter);
+    const data = await UserAddress.find(filter)
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const getAddressById = async (id) => {

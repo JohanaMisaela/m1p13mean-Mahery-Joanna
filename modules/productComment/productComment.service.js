@@ -20,8 +20,17 @@ export const addComment = async (userId, productId, data) => {
     });
 };
 
-export const getComments = async (productId) => {
-    return ProductComment.find({ product: productId })
+export const getComments = async (productId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { product: productId };
+
+    const total = await ProductComment.countDocuments(filter);
+    const data = await ProductComment.find(filter)
         .populate("user", "name surname")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };

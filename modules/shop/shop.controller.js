@@ -96,6 +96,13 @@ export const updateStatus = asyncHandler(async (req, res) => {
 });
 
 export const getMyFavorites = asyncHandler(async (req, res) => {
-    const shops = await shopService.getUserFavorites(req.user._id);
-    res.json(shops);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await shopService.getUserFavorites(req.user._id, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });

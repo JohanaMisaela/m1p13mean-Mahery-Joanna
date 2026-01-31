@@ -11,6 +11,13 @@ export const addComment = asyncHandler(async (req, res) => {
 });
 
 export const getComments = asyncHandler(async (req, res) => {
-    const comments = await service.getComments(req.params.productId);
-    res.json(comments);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await service.getComments(req.params.productId, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });

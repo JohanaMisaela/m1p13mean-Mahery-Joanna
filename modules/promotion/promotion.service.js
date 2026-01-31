@@ -8,8 +8,18 @@ export const getPromotionById = async (id) => {
     return Promotion.findById(id).populate("products");
 };
 
-export const getShopPromotions = async (shopId) => {
-    return Promotion.find({ shop: shopId }).sort({ createdAt: -1 });
+export const getShopPromotions = async (shopId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { shop: shopId };
+
+    const total = await Promotion.countDocuments(filter);
+    const data = await Promotion.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const updatePromotion = async (id, data) => {
