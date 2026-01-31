@@ -112,9 +112,19 @@ router.post("/:shopId", protect(), validate(validation.createProductSchema), cre
  *           type: string
  *           enum: [true, false]
  *         example: "true"
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *         example: 50
  *     responses:
  *       200:
- *         description: List of products
+ *         description: Paginated list of products
  */
 router.get("/", getAll);
 

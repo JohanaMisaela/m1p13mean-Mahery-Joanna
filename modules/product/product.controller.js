@@ -37,8 +37,16 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const getAll = asyncHandler(async (req, res) => {
-    const products = await productService.getAllProducts(req.query);
-    res.json(products);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await productService.getAllProducts(req.query);
+
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const getOne = asyncHandler(async (req, res) => {

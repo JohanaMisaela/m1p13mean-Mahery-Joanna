@@ -20,11 +20,20 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const getAll = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
     const filters = {};
     if (req.query.category) filters.categories = req.query.category;
     if (req.query.isActive) filters.isActive = req.query.isActive === "true";
-    const shops = await shopService.getShops(filters, req.query);
-    res.status(200).json(shops);
+
+    const { data, total } = await shopService.getShops(filters, req.query);
+
+    res.status(200).json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const getOne = asyncHandler(async (req, res) => {

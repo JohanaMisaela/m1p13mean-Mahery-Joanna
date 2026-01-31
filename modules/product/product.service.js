@@ -6,7 +6,7 @@ export const createProduct = (data) => {
 };
 
 export const getAllProducts = async (query = {}) => {
-    const { category, shop, minPrice, maxPrice, search, isOnSale } = query;
+    const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50 } = query;
     const filter = { isActive: true };
 
     if (category) {
@@ -50,9 +50,16 @@ export const getAllProducts = async (query = {}) => {
         filter._id = { $nin: promotedProductIds };
     }
 
+    const skip = (Number(page) - 1) * Number(limit);
+    const total = await Product.countDocuments(filter);
+
     const products = await Product.find(filter)
         .populate("shop", "name")
         .populate("createdBy", "name surname")
+        .populate("category")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
         .lean();
 
     const now = new Date();
@@ -62,7 +69,7 @@ export const getAllProducts = async (query = {}) => {
         endDate: { $gte: now }
     }).lean();
 
-    return products.map(product => {
+    const data = products.map(product => {
         const promo = activePromos.find(p =>
             p.products.some(id => id.toString() === product._id.toString())
         );
@@ -76,6 +83,8 @@ export const getAllProducts = async (query = {}) => {
             isOnSale: !!promo
         };
     });
+
+    return { data, total };
 };
 
 export const getProductById = (id) => {

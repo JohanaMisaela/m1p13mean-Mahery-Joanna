@@ -111,9 +111,17 @@ router.post("/:ownerId", protect(["admin"]), validate(validation.createShopSchem
  *       - in: query
  *         name: isActive
  *         schema: { type: string, enum: [true, false] }
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  *     responses:
  *       200:
- *         description: List of shops
+ *         description: Paginated list of shops
  */
 router.get("/", getAll);
 

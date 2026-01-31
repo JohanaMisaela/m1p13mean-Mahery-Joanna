@@ -60,6 +60,15 @@ router.post("/:targetType/:targetId", protect(), validate(validation.createRepor
  *     tags: [Reports]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  *     responses:
  *       200:
  *         description: List of user's reports
@@ -80,9 +89,17 @@ router.get("/my", protect(), controller.getMyReports);
  *         schema:
  *           type: string
  *           enum: [pending, resolved, dismissed]
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  *     responses:
  *       200:
- *         description: List of all reports
+ *         description: Paginated list of all reports
  */
 router.get("/", protect(["admin"]), controller.getReports);
 

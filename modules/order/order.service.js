@@ -49,18 +49,36 @@ export const createOrder = async (userId, shopId, items, addressId) => {
     });
 };
 
-export const getOrdersByUser = (userId) => {
-    return Order.find({ user: userId })
+export const getOrdersByUser = async (userId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { user: userId };
+
+    const total = await Order.countDocuments(filter);
+    const data = await Order.find(filter)
         .populate("items.product")
         .populate("shop")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
-export const getOrdersByShop = (shopId) => {
-    return Order.find({ shop: shopId })
+export const getOrdersByShop = async (shopId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { shop: shopId };
+
+    const total = await Order.countDocuments(filter);
+    const data = await Order.find(filter)
         .populate("items.product")
         .populate("user")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const updateOrderStatus = async (orderId, newStatus) => {

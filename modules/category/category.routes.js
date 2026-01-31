@@ -50,9 +50,17 @@ router.post("/", protect(["admin"]), validate(validation.createCategorySchema), 
  *         schema:
  *           type: string
  *           enum: [product, shop]
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  *     responses:
  *       200:
- *         description: List of categories
+ *         description: Paginated list of categories
  */
 router.get("/", controller.getAll);
 

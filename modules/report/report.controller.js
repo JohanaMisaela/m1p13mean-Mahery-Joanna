@@ -12,8 +12,15 @@ export const createReport = asyncHandler(async (req, res) => {
 });
 
 export const getReports = asyncHandler(async (req, res) => {
-    const reports = await reportService.getAllReports(req.query.status);
-    res.json(reports);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await reportService.getAllReports(req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const updateStatus = asyncHandler(async (req, res) => {
@@ -22,6 +29,13 @@ export const updateStatus = asyncHandler(async (req, res) => {
 });
 
 export const getMyReports = asyncHandler(async (req, res) => {
-    const reports = await reportService.getUserReports(req.user._id);
-    res.json(reports);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await reportService.getUserReports(req.user._id, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });

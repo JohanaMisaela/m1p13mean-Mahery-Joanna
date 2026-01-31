@@ -4,9 +4,18 @@ export const createCategory = async (data) => {
     return Category.create(data);
 };
 
-export const getCategories = async (type) => {
+export const getCategories = async (query = {}) => {
+    const { type, page = 1, limit = 50 } = query;
     const filter = type ? { type } : {};
-    return Category.find(filter).sort({ name: 1 });
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const total = await Category.countDocuments(filter);
+    const data = await Category.find(filter)
+        .sort({ name: 1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const deleteCategory = async (id) => {

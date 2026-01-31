@@ -5,7 +5,7 @@ export const createShop = async (data) => {
 };
 
 export const getShops = async (filters = {}, query = {}) => {
-    const { search, category } = query;
+    const { search, category, page = 1, limit = 50 } = query;
     const finalFilter = { ...filters };
 
     if (category) {
@@ -20,10 +20,18 @@ export const getShops = async (filters = {}, query = {}) => {
         ];
     }
 
-    return await Shop.find(finalFilter)
+    const skip = (Number(page) - 1) * Number(limit);
+    const total = await Shop.countDocuments(finalFilter);
+
+    const data = await Shop.find(finalFilter)
         .populate("owner", "name surname email")
         .populate("categories")
-        .populate("favoritedBy", "name surname");
+        .populate("favoritedBy", "name surname")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+
+    return { data, total };
 };
 
 export const getShopById = async (id) => {

@@ -7,8 +7,15 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const getAll = asyncHandler(async (req, res) => {
-    const categories = await categoryService.getCategories(req.query.type);
-    res.json(categories);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await categoryService.getCategories(req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const remove = asyncHandler(async (req, res) => {

@@ -16,11 +16,19 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const myOrders = asyncHandler(async (req, res) => {
-    const orders = await orderService.getOrdersByUser(req.user._id);
-    res.json(orders);
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await orderService.getOrdersByUser(req.user._id, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const shopOrders = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
     let shopId = req.query.shopId;
 
     if (req.user.role === "shop") {
@@ -33,8 +41,14 @@ export const shopOrders = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Shop ID is required" });
     }
 
-    const orders = await orderService.getOrdersByShop(shopId);
-    res.json(orders);
+    const { data, total } = await orderService.getOrdersByShop(shopId, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
 });
 
 export const changeStatus = asyncHandler(async (req, res) => {

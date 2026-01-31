@@ -50,6 +50,15 @@ router.post("/", protect(), validate(validation.createOrderSchema), create);
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  */
 router.get("/my", protect(), myOrders);
 
@@ -67,6 +76,14 @@ router.get("/my", protect(), myOrders);
  *         required: false
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *         example: 50
  */
 router.get("/shop", protect(["shop", "admin"]), shopOrders);
 
