@@ -5,6 +5,7 @@ import {
     getOne,
     update,
     activate,
+    favorite,
 } from "./product.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
 
@@ -176,6 +177,39 @@ router.put("/:_id", protect(), update);
 
 /**
  * @swagger
+ * /api/products/{productId}/favorite:
+ *   post:
+ *     summary: Add or remove a product from user's favorites
+ *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [favorite]
+ *             properties:
+ *               favorite:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Shop updated with favorite
+ */
+router.post("/:productId/favorite", protect(), favorite);
+
+
+/**
+ * @swagger
  * /api/products/{id}/activate:
  *   patch:
  *     summary: Activate or deactivate product (admin only)
@@ -204,5 +238,6 @@ router.put("/:_id", protect(), update);
  *         description: Product status updated
  */
 router.patch("/:_id/activate", protect(), activate);
+
 
 export default router;

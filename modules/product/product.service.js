@@ -46,3 +46,10 @@ export const deleteProduct = (id) => {
 export const setProductActive = (id, isActive) => {
     return Product.findByIdAndUpdate(id, { isActive }, { new: true });
 };
+
+export const toggleProductFavorite = (productId, userId, isFavorite) => {
+    const update = isFavorite
+        ? { $addToSet: { favoritedBy: userId } }
+        : { $pull: { favoritedBy: userId } };
+    return Product.findByIdAndUpdate(productId, update, { new: true });
+};

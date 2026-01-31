@@ -102,3 +102,22 @@ export const activate = async (req, res, next) => {
         next(e);
     }
 };
+
+export const favorite = async (req, res, next) => {
+    try {
+        const { productId } = req.params;
+        const { favorite } = req.body;
+
+        const product = await productService.getProductById(productId);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+
+        const updated = await productService.toggleProductFavorite(
+            productId,
+            req.user._id,
+            favorite
+        );
+        res.json(updated);
+    } catch (e) {
+        next(e);
+    }
+};

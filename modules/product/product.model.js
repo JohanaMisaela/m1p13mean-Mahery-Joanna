@@ -25,6 +25,12 @@ const productSchema = new mongoose.Schema(
         },
 
         isActive: { type: Boolean, default: true },
+        favoritedBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     { timestamps: true }
 );
