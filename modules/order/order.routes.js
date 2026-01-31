@@ -62,21 +62,28 @@ router.get("/my", protect(), myOrders);
  * @swagger
  * /api/orders/shop:
  *   get:
- *     summary: Get shop orders
+ *     summary: Get shop orders (shop owner or admin)
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: shopId
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Shop ID (required for admin, ignored for shop owner)
  *     responses:
  *       200:
  *         description: List of shop orders
  */
-router.get("/shop", protect("shop"), shopOrders);
+router.get("/shop", protect(["shop", "admin"]), shopOrders);
 
 /**
  * @swagger
  * /api/orders/{id}/status:
  *   put:
- *     summary: Update order status
+ *     summary: Update order status (shop owner or admin)
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -103,6 +110,6 @@ router.get("/shop", protect("shop"), shopOrders);
  *       200:
  *         description: Order status updated
  */
-router.put("/:id/status", protect("shop"), changeStatus);
+router.put("/:id/status", protect(["shop", "admin"]), changeStatus);
 
 export default router;

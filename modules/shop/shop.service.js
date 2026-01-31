@@ -35,3 +35,7 @@ export const removeFavorite = async (shopId, userId) => {
     await shop.save();
     return shop;
 };
+
+export const getShopByOwner = async (ownerId) => {
+    return await Shop.findOne({ owner: ownerId });
+};

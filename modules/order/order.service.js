@@ -59,3 +59,7 @@ export const updateOrderStatus = (orderId, status) => {
         { new: true }
     );
 };
+
+export const getOrderById = (id) => {
+    return Order.findById(id);
+};
