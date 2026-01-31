@@ -11,6 +11,7 @@ export const swaggerSetup = (app) => {
             },
             servers: [
                 { url: "http://localhost:5000", description: "Local server" },
+                { url: 'https://ecommerce-back-node-express-mongo.onrender.com', description: 'Render server' }
             ],
             components: {
                 securitySchemes: {
