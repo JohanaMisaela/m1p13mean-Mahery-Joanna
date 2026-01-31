@@ -24,3 +24,7 @@ export const rateShop = async (userId, shopId, rating) => {
     await updateShopAggregate(shopId);
     return { message: "Shop rated successfully" };
 };
+
+export const getUserRating = async (userId, shopId) => {
+    return ShopRanking.findOne({ user: userId, shop: shopId });
+};

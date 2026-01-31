@@ -24,3 +24,7 @@ export const rateProduct = async (userId, productId, rating) => {
     await updateProductAggregate(productId);
     return { message: "Product rated successfully" };
 };
+
+export const getUserRating = async (userId, productId) => {
+    return ProductRanking.findOne({ user: userId, product: productId });
+};

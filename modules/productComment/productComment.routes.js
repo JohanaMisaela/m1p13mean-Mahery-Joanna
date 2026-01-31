@@ -37,6 +37,15 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Comment added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id: { type: string }
+ *                 comment: { type: string }
+ *                 user: { type: string }
+ *                 product: { type: string }
  */
 router.post("/:productId", protect(), validate(validation.productCommentSchema), controller.addComment);
 
@@ -55,6 +64,16 @@ router.post("/:productId", protect(), validate(validation.productCommentSchema),
  *     responses:
  *       200:
  *         description: List of comments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *                   comment: { type: string }
+ *                   user: { type: object }
  */
 router.get("/:productId", controller.getComments);
 

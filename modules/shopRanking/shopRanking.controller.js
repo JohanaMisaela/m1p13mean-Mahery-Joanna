@@ -9,3 +9,8 @@ export const rateShop = asyncHandler(async (req, res) => {
     );
     res.json(result);
 });
+
+export const getMyRating = asyncHandler(async (req, res) => {
+    const rating = await service.getUserRating(req.user._id, req.params.shopId);
+    res.json(rating || { rating: 0 });
+});

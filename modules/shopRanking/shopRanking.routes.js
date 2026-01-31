@@ -35,14 +35,27 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Shop rated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  */
 router.post("/:shopId", protect(), validate(validation.shopRatingSchema), controller.rateShop);
+
+/**
+ * @swagger
+ * /api/shop-ranking/my/{shopId}:
+ *   get:
+ *     summary: Get my rating for a shop
+ *     tags: [ShopRanking]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: shopId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User's rating for the shop
+ */
+router.get("/my/:shopId", protect(), controller.getMyRating);
 
 export default router;
