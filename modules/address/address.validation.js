@@ -25,3 +25,5 @@ export const updateAddressStatusSchema = z.object({
         isActive: z.boolean(),
     }),
 });
+
+export const setDefaultAddressSchema = z.object({});

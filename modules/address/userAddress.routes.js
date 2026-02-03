@@ -4,6 +4,7 @@ import {
     updateAddress,
     updateStatus,
     getAddresses,
+    setDefault,
 } from "./userAddress.controller.js";
 import { protect } from "../../core/middlewares/auth.middleware.js";
 import validate from "../../core/middlewares/validate.middleware.js";
@@ -83,5 +84,25 @@ router.put("/:id", protect(), validate(validation.updateAddressSchema), updateAd
  *           type: string
  */
 router.patch("/:id/status", protect(), validate(validation.updateAddressStatusSchema), updateStatus);
+
+/**
+ * @swagger
+ * /api/addresses/{id}/default:
+ *   patch:
+ *     summary: Set address as default
+ *     tags: [UserAddress]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Address set as default
+ */
+router.patch("/:id/default", protect(), validate(validation.setDefaultAddressSchema), setDefault);
 
 export default router;

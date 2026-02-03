@@ -42,3 +42,8 @@ export const getAddresses = asyncHandler(async (req, res) => {
         totalPages: Math.ceil(total / Number(limit))
     });
 });
+
+export const setDefault = asyncHandler(async (req, res) => {
+    const address = await userAddressService.setDefaultAddress(req.params.id, req.user._id);
+    res.json(address);
+});

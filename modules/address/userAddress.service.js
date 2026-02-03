@@ -2,6 +2,10 @@ import UserAddress from "../address/userAddress.model.js";
 import User from "../user/user.model.js";
 
 export const addAddress = async (userId, data) => {
+    if (data.isDefault) {
+        await UserAddress.updateMany({ user: userId }, { isDefault: false });
+    }
+
     const address = await UserAddress.create({ user: userId, ...data });
 
     if (data.isDefault) {
@@ -14,6 +18,10 @@ export const addAddress = async (userId, data) => {
 export const updateAddress = async (addressId, data) => {
     const address = await UserAddress.findById(addressId);
     if (!address) throw new Error("Address not found");
+
+    if (data.isDefault) {
+        await UserAddress.updateMany({ user: address.user }, { isDefault: false });
+    }
 
     Object.assign(address, data);
     await address.save();
@@ -53,4 +61,17 @@ export const getAddressesByUser = async (userId, query = {}) => {
 
 export const getAddressById = async (id) => {
     return UserAddress.findById(id);
+};
+
+export const setDefaultAddress = async (addressId, userId) => {
+    const address = await UserAddress.findOne({ _id: addressId, user: userId, isActive: true });
+    if (!address) throw new Error("Address not found or inactive");
+
+    await User.findByIdAndUpdate(userId, { defaultAddress: address._id });
+
+    await UserAddress.updateMany({ user: userId }, { isDefault: false });
+    address.isDefault = true;
+    await address.save();
+
+    return address;
 };
