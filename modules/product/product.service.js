@@ -87,11 +87,32 @@ export const getAllProducts = async (query = {}) => {
     return { data, total };
 };
 
-export const getProductById = (id) => {
-    return Product.findById(id)
-        .populate("shop")
+export const getProductById = async (id) => {
+    const product = await Product.findById(id)
+        .populate("shop", "name")
+        .populate("createdBy", "name surname")
         .populate("category")
-        .populate("createdBy", "name surname");
+        .lean();
+
+    if (!product) return null;
+
+    const now = new Date();
+    const promo = await Promotion.findOne({
+        isActive: true,
+        startDate: { $lte: now },
+        endDate: { $gte: now },
+        products: product._id
+    }).lean();
+
+    return {
+        ...product,
+        activePromotion: promo ? {
+            name: promo.name,
+            discountPercentage: promo.discountPercentage,
+            endDate: promo.endDate
+        } : null,
+        isOnSale: !!promo
+    };
 };
 
 export const updateProduct = (id, data) => {
