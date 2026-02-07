@@ -34,3 +34,25 @@ export const getComments = async (productId, query = {}) => {
 
     return { data, total };
 };
+
+export const updateComment = async (commentId, userId, data) => {
+    const comment = await ProductComment.findById(commentId);
+    if (!comment) throw new Error("Commentaire non trouvé");
+
+    if (comment.user.toString() !== userId.toString()) {
+        throw new Error("Action non autorisée");
+    }
+
+    return ProductComment.findByIdAndUpdate(commentId, data, { new: true });
+};
+
+export const deleteComment = async (commentId, userId) => {
+    const comment = await ProductComment.findById(commentId);
+    if (!comment) throw new Error("Commentaire non trouvé");
+
+    if (comment.user.toString() !== userId.toString()) {
+        throw new Error("Action non autorisée");
+    }
+
+    return ProductComment.findByIdAndDelete(commentId);
+};

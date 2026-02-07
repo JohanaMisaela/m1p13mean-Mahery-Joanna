@@ -83,4 +83,7 @@ router.post("/:productId", protect(), validate(validation.productCommentSchema),
  */
 router.get("/:productId", controller.getComments);
 
+router.put("/:commentId", protect(), validate(validation.updateCommentSchema), controller.updateComment);
+router.delete("/:commentId", protect(), validate(validation.deleteCommentSchema), controller.deleteComment);
+
 export default router;

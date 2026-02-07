@@ -21,3 +21,17 @@ export const getComments = asyncHandler(async (req, res) => {
         totalPages: Math.ceil(total / Number(limit))
     });
 });
+
+export const updateComment = asyncHandler(async (req, res) => {
+    const comment = await service.updateComment(
+        req.params.commentId,
+        req.user._id,
+        req.body
+    );
+    res.json(comment);
+});
+
+export const deleteComment = asyncHandler(async (req, res) => {
+    await service.deleteComment(req.params.commentId, req.user._id);
+    res.json({ success: true, message: "Commentaire supprimé" });
+});
