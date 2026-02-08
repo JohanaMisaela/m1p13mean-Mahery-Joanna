@@ -11,7 +11,7 @@ export const getAllProducts = async (query = {}) => {
     const filter = {};
 
     if (category) {
-        filter.category = category;
+        filter.categories = { $in: [category] };
     }
     if (shop) filter.shop = shop;
 
@@ -92,7 +92,7 @@ export const getProductById = async (id) => {
     const product = await Product.findById(id)
         .populate({ path: "shop", select: "name owner" })
         .populate("createdBy", "name surname")
-        .populate("category")
+        .populate("categories")
         .lean();
 
     if (!product) return null;
@@ -120,7 +120,7 @@ export const getProductById = async (id) => {
 };
 
 export const updateProduct = (id, data) => {
-    return Product.findByIdAndUpdate(id, data, { new: true }).populate("category");
+    return Product.findByIdAndUpdate(id, data, { new: true }).populate("categories");
 };
 
 export const deleteProduct = (id) => {

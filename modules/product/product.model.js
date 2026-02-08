@@ -8,11 +8,11 @@ const productSchema = new mongoose.Schema(
         stock: { type: Number, default: 0 },
         images: [{ type: String }],
 
-        category: {
+        categories: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
-        },
+        }],
         tags: [{ type: String }],
 
         shop: {

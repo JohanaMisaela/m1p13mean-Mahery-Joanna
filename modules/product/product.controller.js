@@ -73,8 +73,10 @@ export const update = asyncHandler(async (req, res) => {
     }
 
     // Category find-or-create logic
-    if (req.body.category) {
-        req.body.category = await categoryService.findOrCreateCategory(req.body.category, "product");
+    if (req.body.categories) {
+        req.body.categories = await Promise.all(
+            req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "product"))
+        );
     }
 
     const updated = await productService.updateProduct(req.params.id, req.body);
