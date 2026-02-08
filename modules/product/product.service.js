@@ -55,7 +55,7 @@ export const getAllProducts = async (query = {}) => {
     const total = await Product.countDocuments(filter);
 
     const products = await Product.find(filter)
-        .populate("shop", "name")
+        .populate({ path: "shop", select: "name owner" })
         .populate("createdBy", "name surname")
         .populate("category")
         .sort({ createdAt: -1 })
@@ -90,7 +90,7 @@ export const getAllProducts = async (query = {}) => {
 
 export const getProductById = async (id) => {
     const product = await Product.findById(id)
-        .populate("shop", "name")
+        .populate({ path: "shop", select: "name owner" })
         .populate("createdBy", "name surname")
         .populate("category")
         .lean();

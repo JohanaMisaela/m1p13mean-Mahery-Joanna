@@ -32,7 +32,7 @@ const app = express();
 
 app.use(
     cors({
-        origin: ["http://localhost:4200", "https://first-angular-project-lac.vercel.app"],
+        origin: true,
         credentials: true,
     })
 );
