@@ -10,8 +10,19 @@ export const getAllProducts = async (query = {}) => {
     const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50, isActive } = query;
     const filter = {};
 
+    if (isActive !== undefined) {
+        if (isActive !== "all") {
+            filter.isActive = isActive === "true" || isActive === true;
+        }
+    } else {
+        filter.isActive = true;
+    }
+
     if (category) {
-        filter.categories = { $in: [category] };
+        filter.$or = [
+            { category: category },
+            { categories: { $in: [category] } }
+        ];
     }
     if (shop) filter.shop = shop;
 
@@ -37,7 +48,7 @@ export const getAllProducts = async (query = {}) => {
             endDate: { $gte: now }
         }).select("products name discountPercentage");
 
-        const promotedProductIds = activePromos.flatMap(p => p.products);
+        const promotedProductIds = activePromos.flatMap(p => p.products || []);
         filter._id = { $in: promotedProductIds };
     } else if (isOnSale === "false") {
         const now = new Date();
@@ -47,7 +58,7 @@ export const getAllProducts = async (query = {}) => {
             endDate: { $gte: now }
         }).select("products");
 
-        const promotedProductIds = activePromos.flatMap(p => p.products);
+        const promotedProductIds = activePromos.flatMap(p => p.products || []);
         filter._id = { $nin: promotedProductIds };
     }
 
@@ -72,7 +83,7 @@ export const getAllProducts = async (query = {}) => {
 
     const data = products.map(product => {
         const promo = activePromos.find(p =>
-            p.products.some(id => id.toString() === product._id.toString())
+            p.products?.some(id => id.toString() === product._id.toString())
         );
         return {
             ...product,

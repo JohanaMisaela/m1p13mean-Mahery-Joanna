@@ -60,10 +60,13 @@ export const update = asyncHandler(async (req, res) => {
     const product = await productService.getProductById(req.params.id);
     if (!product) return res.status(404).json({ message: "Not found" });
 
-    // Owner of the product or Owner of the shop or admin
-    const isProductOwner = product.createdBy._id.toString() === req.user._id.toString();
-    const isShopOwner = product.shop && product.shop.owner && product.shop.owner.toString() === req.user._id.toString();
-    const isAdmin = req.user.role === "admin";
+    // Hardened check for isProductOwner and isShopOwner
+    const creatorId = product.createdBy?._id || product.createdBy;
+    const shopOwnerId = product.shop?.owner;
+
+    const isProductOwner = creatorId?.toString() === req.user?._id?.toString();
+    const isShopOwner = shopOwnerId?.toString() === req.user?._id?.toString();
+    const isAdmin = req.user?.role === "admin";
 
     if (!isProductOwner && !isShopOwner && !isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
@@ -76,9 +79,10 @@ export const update = asyncHandler(async (req, res) => {
 
     // Category find-or-create logic
     if (req.body.categories) {
-        req.body.categories = await Promise.all(
+        const catIds = await Promise.all(
             req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "product"))
         );
+        req.body.categories = catIds.filter(id => id != null);
     }
 
     const updated = await productService.updateProduct(req.params.id, req.body);

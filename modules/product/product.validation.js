@@ -21,6 +21,7 @@ export const updateProductSchema = z.object({
         price: z.number().positive().optional(),
         stock: z.number().int().nonnegative().optional(),
         images: z.array(z.string()).optional(),
+        category: z.string().optional(),
         categories: z.array(z.string()).optional(),
         tags: z.array(z.string()).optional(),
         attributeConfig: z.record(z.array(z.string())).optional(),
