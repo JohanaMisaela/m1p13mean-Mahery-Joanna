@@ -1,5 +1,6 @@
 import Order from "./order.model.js";
 import Product from "../product/product.model.js";
+import ProductVariant from "../productVariant/productVariant.model.js";
 import { getActiveProductPromotion } from "../promotion/promotion.service.js";
 
 export const createOrder = async (userId, shopId, items, addressId) => {
@@ -11,20 +12,31 @@ export const createOrder = async (userId, shopId, items, addressId) => {
     const orderItems = [];
 
     for (const item of items) {
-        const product = await Product.findById(item.productId);
-        if (!product) throw new Error(`Product ${item.productId} not found`);
+        const product = await Product.findById(item.product); // Changed from productId to product to match model
+        if (!product) throw new Error(`Product ${item.product} not found`);
 
-        if (product.stock < item.quantity) {
-            throw new Error(`Not enough stock for ${product.name}`);
+        let variant = null;
+        if (item.variant) {
+            variant = await ProductVariant.findById(item.variant);
+            if (!variant) throw new Error(`Variant ${item.variant} not found`);
+            if (variant.product.toString() !== product._id.toString()) {
+                throw new Error(`Variant ${item.variant} does not belong to product ${product._id}`);
+            }
+        }
+
+        const stockToCheck = variant ? variant.stock : product.stock;
+        if (stockToCheck < item.quantity) {
+            throw new Error(`Not enough stock for ${product.name}${variant ? ' (Variant)' : ''}`);
         }
 
         // Check for active promotion
         const promotion = await getActiveProductPromotion(product._id);
-        let finalPrice = product.price;
+        const basePrice = variant ? variant.price : product.price;
+        let finalPrice = basePrice;
         let appliedPromoId = null;
 
         if (promotion) {
-            finalPrice = product.price * (1 - promotion.discountPercentage / 100);
+            finalPrice = basePrice * (1 - promotion.discountPercentage / 100);
             appliedPromoId = promotion._id;
         }
 
@@ -32,9 +44,10 @@ export const createOrder = async (userId, shopId, items, addressId) => {
 
         orderItems.push({
             product: product._id,
+            variant: variant ? variant._id : null,
             quantity: item.quantity,
             price: finalPrice,
-            originalPrice: product.price,
+            originalPrice: basePrice,
             promotion: appliedPromoId,
         });
     }
@@ -57,6 +70,7 @@ export const getOrdersByUser = async (userId, query = {}) => {
     const total = await Order.countDocuments(filter);
     const data = await Order.find(filter)
         .populate("items.product")
+        .populate("items.variant")
         .populate("shop")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -73,6 +87,7 @@ export const getOrdersByShop = async (shopId, query = {}) => {
     const total = await Order.countDocuments(filter);
     const data = await Order.find(filter)
         .populate("items.product")
+        .populate("items.variant")
         .populate("user")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -95,15 +110,29 @@ export const updateOrderStatus = async (orderId, newStatus) => {
     // RULE: Deduct stock only on CONFIRMED from PENDING
     if (newStatus === "CONFIRMED" && oldStatus === "PENDING") {
         for (const item of order.items) {
-            const product = await Product.findById(item.product);
-            if (!product) throw new Error(`Product ${item.product} not found`);
+            if (item.variant) {
+                const variantFound = await ProductVariant.findById(item.variant);
+                if (!variantFound || variantFound.product.toString() !== item.product.toString()) {
+                    throw new Error("Invalid variant for product");
+                }
+                if (variantFound.stock < item.quantity) {
+                    throw new Error(`Insufficient stock for variant ${variantFound.sku || item.variant}`);
+                }
+                // priceAtOrder = variantFound.price; // This variable is not used, removing it.
 
-            if (product.stock < item.quantity) {
-                throw new Error(`Not enough stock for ${product.name} to confirm order`);
+                // Deduct stock for variant
+                variantFound.stock -= item.quantity;
+                await variantFound.save();
+            } else {
+                if (productFound.stock < item.quantity) {
+                    throw new Error(`Insufficient stock for product ${productFound.name}`);
+                }
+                // priceAtOrder = productFound.price; // This variable is not used, removing it.
+
+                // Deduct stock for product
+                productFound.stock -= item.quantity;
+                await productFound.save();
             }
-
-            product.stock -= item.quantity;
-            await product.save();
         }
     }
 

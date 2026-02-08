@@ -6,7 +6,6 @@ const productSchema = new mongoose.Schema(
         description: { type: String },
         price: { type: Number, required: true },
         stock: { type: Number, default: 0 },
-
         images: [{ type: String }],
 
         category: {
@@ -37,6 +36,13 @@ const productSchema = new mongoose.Schema(
         ],
         averageRating: { type: Number, default: 0 },
         totalRatings: { type: Number, default: 0 },
+
+        // Configuration for variants (e.g., { "color": ["Red", "Blue"], "size": ["42", "43"] })
+        attributeConfig: {
+            type: Map,
+            of: [String],
+            default: {},
+        },
     },
     { timestamps: true }
 );

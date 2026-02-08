@@ -19,6 +19,7 @@ import productCommentRoutes from "./modules/productComment/productComment.routes
 import reportRoutes from "./modules/report/report.routes.js";
 import promotionRoutes from "./modules/promotion/promotion.routes.js";
 import categoryRoutes from "./modules/category/category.routes.js";
+import productVariantRoutes from "./modules/productVariant/productVariant.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
@@ -53,6 +54,7 @@ app.use("/api/product-comments", productCommentRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/promotions", promotionRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/product-variants", productVariantRoutes);
 
 swaggerSetup(app);
 

@@ -7,8 +7,10 @@ export const createProductSchema = z.object({
         price: z.number().positive("Price must be positive"),
         stock: z.number().int().nonnegative().optional(),
         images: z.array(z.string().url()).optional(),
-        category: z.string().optional(),
+        category: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid category ID"),
+        shop: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid shop ID"),
         tags: z.array(z.string()).optional(),
+        attributeConfig: z.record(z.array(z.string())).optional(),
     }),
 });
 
@@ -19,8 +21,9 @@ export const updateProductSchema = z.object({
         price: z.number().positive().optional(),
         stock: z.number().int().nonnegative().optional(),
         images: z.array(z.string().url()).optional(),
-        category: z.string().optional(),
+        category: z.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
         tags: z.array(z.string()).optional(),
+        attributeConfig: z.record(z.array(z.string())).optional(),
         isActive: z.boolean().optional(),
     }),
 });

@@ -1,10 +1,12 @@
 import Product from "./product.model.js";
+import * as productVariantService from "../productVariant/productVariant.service.js";
 import Promotion from "../promotion/promotion.model.js";
 
 export const createProduct = (data) => {
     return Product.create(data);
 };
 
+// ... (rest of service remains same)
 export const getAllProducts = async (query = {}) => {
     const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50 } = query;
     const filter = { isActive: true };
@@ -96,6 +98,9 @@ export const getProductById = async (id) => {
 
     if (!product) return null;
 
+    // Fetch Variants from the new service
+    const variants = await productVariantService.getVariantsByProduct(id);
+
     const now = new Date();
     const promo = await Promotion.findOne({
         isActive: true,
@@ -106,6 +111,7 @@ export const getProductById = async (id) => {
 
     return {
         ...product,
+        variants,
         activePromotion: promo ? {
             name: promo.name,
             discountPercentage: promo.discountPercentage,
