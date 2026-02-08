@@ -8,9 +8,19 @@ export const createProductSchema = z.object({
         stock: z.number().int().nonnegative().optional(),
         images: z.array(z.string()).optional(),
         categories: z.array(z.string()).min(1, "At least one category is required"),
-        shop: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid shop ID"),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.record(z.array(z.string())).optional(),
+        attributeConfig: z.record(z.union([z.string(), z.array(z.string())]))
+            .optional()
+            .transform((val) => {
+                if (!val) return val;
+                const transformed = {};
+                for (const [k, v] of Object.entries(val)) {
+                    transformed[k] = typeof v === "string"
+                        ? v.split(",").map(s => s.trim()).filter(s => s !== "")
+                        : v;
+                }
+                return transformed;
+            }),
     }),
 });
 
@@ -24,7 +34,18 @@ export const updateProductSchema = z.object({
         category: z.string().optional(),
         categories: z.array(z.string()).optional(),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.record(z.array(z.string())).optional(),
+        attributeConfig: z.record(z.union([z.string(), z.array(z.string())]))
+            .optional()
+            .transform((val) => {
+                if (!val) return val;
+                const transformed = {};
+                for (const [k, v] of Object.entries(val)) {
+                    transformed[k] = typeof v === "string"
+                        ? v.split(",").map(s => s.trim()).filter(s => s !== "")
+                        : v;
+                }
+                return transformed;
+            }),
         isActive: z.boolean().optional(),
     }),
 });

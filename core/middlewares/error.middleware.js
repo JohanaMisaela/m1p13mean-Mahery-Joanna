@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
 
     // Log for developer
     if (process.env.NODE_ENV !== "test") {
-        console.error(err);
+        console.error("ERROR HANDLER:", err);
     }
 
     // Zod validation error
