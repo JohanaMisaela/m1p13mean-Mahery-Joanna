@@ -6,10 +6,15 @@ export const createProduct = (data) => {
     return Product.create(data);
 };
 
-// ... (rest of service remains same)
 export const getAllProducts = async (query = {}) => {
-    const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50 } = query;
-    const filter = { isActive: true };
+    const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50, isActive } = query;
+    const filter = {};
+
+    if (isActive !== undefined) {
+        filter.isActive = isActive === "true" || isActive === true;
+    } else {
+        filter.isActive = true;
+    }
 
     if (category) {
         filter.category = category;
@@ -98,7 +103,6 @@ export const getProductById = async (id) => {
 
     if (!product) return null;
 
-    // Fetch Variants from the new service
     const variants = await productVariantService.getVariantsByProduct(id);
 
     const now = new Date();
