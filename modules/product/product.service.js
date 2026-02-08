@@ -10,12 +10,6 @@ export const getAllProducts = async (query = {}) => {
     const { category, shop, minPrice, maxPrice, search, isOnSale, page = 1, limit = 50, isActive } = query;
     const filter = {};
 
-    if (isActive !== undefined) {
-        filter.isActive = isActive === "true" || isActive === true;
-    } else {
-        filter.isActive = true;
-    }
-
     if (category) {
         filter.category = category;
     }
