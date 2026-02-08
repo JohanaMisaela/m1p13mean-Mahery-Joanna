@@ -57,7 +57,7 @@ export const getAllProducts = async (query = {}) => {
     const products = await Product.find(filter)
         .populate({ path: "shop", select: "name owner" })
         .populate("createdBy", "name surname")
-        .populate("category")
+        .populate("categories")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit))
