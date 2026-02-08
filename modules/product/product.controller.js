@@ -23,7 +23,6 @@ export const create = asyncHandler(async (req, res) => {
         return res.status(403).json({ message: "You are not authorized to add products to this shop" });
     }
 
-    // Category find-or-create logic
     if (req.body.category) {
         req.body.category = await categoryService.findOrCreateCategory(req.body.category, "product");
     }
