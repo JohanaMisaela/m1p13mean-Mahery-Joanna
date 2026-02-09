@@ -1,9 +1,17 @@
 import { z } from "zod";
 
-const flexibleStringArray = z.preprocess((val) => {
-    if (typeof val === "string") return val.split(",").map((s) => s.trim()).filter(Boolean);
-    return val;
-}, z.array(z.string()));
+// Note: avoid z.record() as it crashes in this environment's Zod version
+const attributeConfigSchema = z.any().optional().transform((val) => {
+    if (!val || typeof val !== "object") return val;
+    const result = {};
+    for (const key in val) {
+        const v = val[key];
+        result[key] = Array.isArray(v)
+            ? v
+            : (typeof v === "string" ? v.split(",").map(s => s.trim()).filter(Boolean) : []);
+    }
+    return result;
+});
 
 export const createProductSchema = z.object({
     body: z.object({
@@ -15,7 +23,7 @@ export const createProductSchema = z.object({
         categories: z.array(z.string()).min(1, "At least one category is required"),
         shop: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid shop ID"),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.record(flexibleStringArray).optional(),
+        attributeConfig: attributeConfigSchema,
     }),
 });
 
@@ -29,7 +37,7 @@ export const updateProductSchema = z.object({
         category: z.string().optional(),
         categories: z.array(z.string()).optional(),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.record(flexibleStringArray).optional(),
+        attributeConfig: attributeConfigSchema,
         isActive: z.boolean().optional(),
     }),
 });
