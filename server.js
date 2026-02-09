@@ -41,6 +41,8 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+app.get("/", (req, res) => res.json({ status: "success", message: "E-commerce API is online" }));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/addresses", addressRoutes);

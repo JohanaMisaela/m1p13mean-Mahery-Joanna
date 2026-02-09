@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const flexibleStringArray = z.preprocess((val) => {
+    if (typeof val === "string") return val.split(",").map((s) => s.trim()).filter(Boolean);
+    return val;
+}, z.array(z.string()));
+
 export const createProductSchema = z.object({
     body: z.object({
         name: z.string().min(1, "Name is required"),
@@ -10,16 +15,7 @@ export const createProductSchema = z.object({
         categories: z.array(z.string()).min(1, "At least one category is required"),
         shop: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid shop ID"),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.preprocess((val) => {
-            if (!val || typeof val !== "object") return val;
-            const transformed = {};
-            for (const [k, v] of Object.entries(val)) {
-                transformed[k] = typeof v === "string"
-                    ? v.split(",").map(s => s.trim()).filter(s => s !== "")
-                    : v;
-            }
-            return transformed;
-        }, z.record(z.array(z.string()))).optional(),
+        attributeConfig: z.record(flexibleStringArray).optional(),
     }),
 });
 
@@ -30,19 +26,10 @@ export const updateProductSchema = z.object({
         price: z.number().positive().optional(),
         stock: z.number().int().nonnegative().optional(),
         images: z.array(z.string()).optional(),
-        category: z.string().optional(), // Compatibility
+        category: z.string().optional(),
         categories: z.array(z.string()).optional(),
         tags: z.array(z.string()).optional(),
-        attributeConfig: z.preprocess((val) => {
-            if (!val || typeof val !== "object") return val;
-            const transformed = {};
-            for (const [k, v] of Object.entries(val)) {
-                transformed[k] = typeof v === "string"
-                    ? v.split(",").map(s => s.trim()).filter(s => s !== "")
-                    : v;
-            }
-            return transformed;
-        }, z.record(z.array(z.string()))).optional(),
+        attributeConfig: z.record(flexibleStringArray).optional(),
         isActive: z.boolean().optional(),
     }),
 });
