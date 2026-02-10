@@ -24,7 +24,9 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-    const user = await userService.updateUserProfile(req.user._id, req.body);
+    // Only allow name, surname, email for self-update profile
+    const { name, surname, email } = req.body;
+    const user = await userService.updateUser(req.user._id, { name, surname, email });
     res.json(user);
 });
 
@@ -36,7 +38,7 @@ export const updatePassword = asyncHandler(async (req, res) => {
 
 export const changeRole = asyncHandler(async (req, res) => {
     const { role } = req.body;
-    const user = await userService.changeUserRole(req.params.userId, role);
+    const user = await userService.updateUser(req.params.userId, { role });
     res.json({ message: "Role updated", user });
 });
 
@@ -46,8 +48,12 @@ export const updateStatus = asyncHandler(async (req, res) => {
         return res.status(403).json({ message: "Not authorized" });
     }
 
-    const user = await userService.updateUserStatus(req.params.userId, isActive);
+    const user = await userService.updateUser(req.params.userId, { isActive });
     res.json({ message: "User status updated", user });
 });
 
-
+export const adminUpdateUser = asyncHandler(async (req, res) => {
+    const { name, surname, email, role, isActive } = req.body;
+    const user = await userService.updateUser(req.params.id, { name, surname, email, role, isActive });
+    res.json({ message: "User updated successfully", user });
+});

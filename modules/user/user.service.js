@@ -7,14 +7,19 @@ export const getUserById = async (id) => {
     return user;
 };
 
-export const updateUserProfile = async (id, data) => {
-    const { name, surname, email } = data;
+/**
+ * Generic user update method
+ */
+export const updateUser = async (id, data) => {
     const user = await User.findById(id);
     if (!user) throw new Error("User not found");
 
-    if (name) user.name = name;
-    if (surname) user.surname = surname;
-    if (email) user.email = email;
+    const allowedFields = ["name", "surname", "email", "role", "isActive", "defaultAddress"];
+    allowedFields.forEach((field) => {
+        if (data[field] !== undefined) {
+            user[field] = data[field];
+        }
+    });
 
     await user.save();
     return user;
@@ -32,15 +37,6 @@ export const changePassword = async (id, oldPassword, newPassword) => {
     return user;
 };
 
-export const changeUserRole = async (userId, newRole) => {
-    const user = await User.findById(userId);
-    if (!user) throw new Error("User not found");
-
-    user.role = newRole;
-    await user.save();
-    return user;
-};
-
 export const getAllUsers = async (query = {}) => {
     const { page = 1, limit = 50 } = query;
     const skip = (Number(page) - 1) * Number(limit);
@@ -54,15 +50,3 @@ export const getAllUsers = async (query = {}) => {
 
     return { data, total };
 };
-
-export const updateUserStatus = async (userId, isActive) => {
-    const user = await User.findById(userId);
-    if (!user) throw new Error("User not found");
-
-    user.isActive = isActive;
-    await user.save();
-    return user;
-};
-
-
-
