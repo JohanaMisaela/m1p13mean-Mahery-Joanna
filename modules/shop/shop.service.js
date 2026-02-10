@@ -76,6 +76,8 @@ export const getUserFavorites = async (userId, query = {}) => {
 
     const total = await Shop.countDocuments(filter);
     const data = await Shop.find(filter)
+        .populate("owner", "name surname email")
+        .populate("categories")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit));

@@ -149,8 +149,42 @@ export const toggleProductFavorite = (productId, userId, isFavorite) => {
     return Product.findByIdAndUpdate(productId, update, { new: true });
 };
 
-export const getUserFavorites = (userId) => {
-    return Product.find({ favoritedBy: userId, isActive: true })
-        .populate("shop", "name")
-        .sort({ createdAt: -1 });
+export const getUserFavorites = async (userId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const filter = { favoritedBy: userId, isActive: true };
+
+    const total = await Product.countDocuments(filter);
+    const data = await Product.find(filter)
+        .populate({ path: "shop", select: "name owner" })
+        .populate("categories")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .lean();
+
+    // Map promotions if needed, similar to getAllProducts
+    const now = new Date();
+    const activePromos = await Promotion.find({
+        isActive: true,
+        startDate: { $lte: now },
+        endDate: { $gte: now }
+    }).select("products name discountPercentage endDate").lean();
+
+    const enrichedData = data.map(product => {
+        const promo = activePromos.find(p =>
+            p.products?.some(id => id.toString() === product._id.toString())
+        );
+        return {
+            ...product,
+            activePromotion: promo ? {
+                name: promo.name,
+                discountPercentage: promo.discountPercentage,
+                endDate: promo.endDate
+            } : null,
+            isOnSale: !!promo
+        };
+    });
+
+    return { data: enrichedData, total };
 };
