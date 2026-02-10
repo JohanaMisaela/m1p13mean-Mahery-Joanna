@@ -14,7 +14,7 @@ export const updateUser = async (id, data) => {
     const user = await User.findById(id);
     if (!user) throw new Error("User not found");
 
-    const allowedFields = ["name", "surname", "email", "role", "isActive", "defaultAddress"];
+    const allowedFields = ["name", "surname", "email", "role", "isActive", "defaultAddress", "contact"];
     allowedFields.forEach((field) => {
         if (data[field] !== undefined) {
             user[field] = data[field];

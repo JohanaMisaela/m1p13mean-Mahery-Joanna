@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import userModel from "../user/user.model.js";
 import userAddressModel from "../address/userAddress.model.js";
 
-export const createUser = async ({ name, email, password, role, address, surname }) => {
+export const createUser = async ({ name, email, password, role, address, surname, contact }) => {
     const hashed = await bcrypt.hash(password, 10);
-    const user = await userModel.create({ name, email, password: hashed, role, surname });
+    const user = await userModel.create({ name, email, password: hashed, role, surname, contact });
 
     let defaultAddress = null;
 

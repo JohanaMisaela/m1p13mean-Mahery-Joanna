@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema(
         surname: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, select: false },
+        contact: { type: String },
         role: { type: String, enum: ["admin", "shop", "user"], default: "user" },
         defaultAddress: { type: mongoose.Schema.Types.ObjectId, ref: "UserAddress" },
         isActive: { type: Boolean, default: true },
