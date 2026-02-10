@@ -24,14 +24,20 @@ export const createOrder = async (userId, shopId, items, addressId) => {
             }
         }
 
-        const stockToCheck = variant ? variant.stock : product.stock;
+        // PRICE & STOCK: Solely from variant if product fields are empty/deleted
+        const stockToCheck = variant ? variant.stock : (product.stock || 0);
+        const basePrice = variant ? variant.price : (product.price || 0);
+
         if (stockToCheck < item.quantity) {
             throw new Error(`Not enough stock for ${product.name}${variant ? ' (Variant)' : ''}`);
         }
 
+        if (basePrice <= 0 && !variant) {
+            throw new Error(`Product ${product.name} must have a variant selected for pricing`);
+        }
+
         // Check for active promotion
         const promotion = await getActiveProductPromotion(product._id);
-        const basePrice = variant ? variant.price : product.price;
         let finalPrice = basePrice;
         let appliedPromoId = null;
 
@@ -118,16 +124,17 @@ export const updateOrderStatus = async (orderId, newStatus) => {
                 if (variantFound.stock < item.quantity) {
                     throw new Error(`Insufficient stock for variant ${variantFound.sku || item.variant}`);
                 }
-                // priceAtOrder = variantFound.price; // This variable is not used, removing it.
 
                 // Deduct stock for variant
                 variantFound.stock -= item.quantity;
                 await variantFound.save();
             } else {
+                const productFound = await Product.findById(item.product);
+                if (!productFound) throw new Error(`Product ${item.product} not found`);
+
                 if (productFound.stock < item.quantity) {
                     throw new Error(`Insufficient stock for product ${productFound.name}`);
                 }
-                // priceAtOrder = productFound.price; // This variable is not used, removing it.
 
                 // Deduct stock for product
                 productFound.stock -= item.quantity;

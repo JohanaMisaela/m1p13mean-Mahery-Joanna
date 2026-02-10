@@ -7,11 +7,12 @@ export const getMyCart = asyncHandler(async (req, res) => {
 });
 
 export const addItem = asyncHandler(async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId, variantId, quantity } = req.body;
 
     const cart = await cartService.addToCart(
         req.user._id,
         productId,
+        variantId,
         quantity || 1
     );
 
@@ -20,10 +21,12 @@ export const addItem = asyncHandler(async (req, res) => {
 
 export const updateItem = asyncHandler(async (req, res) => {
     const { quantity } = req.body;
+    const { productId, variantId } = req.params;
 
     const cart = await cartService.updateQuantity(
         req.user._id,
-        req.params.productId,
+        productId,
+        variantId,
         quantity
     );
 
@@ -31,9 +34,12 @@ export const updateItem = asyncHandler(async (req, res) => {
 });
 
 export const removeItem = asyncHandler(async (req, res) => {
+    const { productId, variantId } = req.params;
+
     const cart = await cartService.removeFromCart(
         req.user._id,
-        req.params.productId
+        productId,
+        variantId
     );
 
     res.json(cart);

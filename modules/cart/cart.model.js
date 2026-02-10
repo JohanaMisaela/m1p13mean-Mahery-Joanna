@@ -12,6 +12,10 @@ const cartItemSchema = new mongoose.Schema({
         min: 1,
         default: 1,
     },
+    variant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductVariant",
+    },
 });
 
 const cartSchema = new mongoose.Schema(

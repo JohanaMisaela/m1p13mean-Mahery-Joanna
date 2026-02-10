@@ -60,7 +60,6 @@ export const update = asyncHandler(async (req, res) => {
     const product = await productService.getProductById(req.params.id);
     if (!product) return res.status(404).json({ message: "Not found" });
 
-    // Hardened check for isProductOwner and isShopOwner
     const creatorId = product.createdBy?._id || product.createdBy;
     const shopOwnerId = product.shop?.owner;
 
@@ -72,12 +71,10 @@ export const update = asyncHandler(async (req, res) => {
         return res.status(403).json({ message: "Forbidden" });
     }
 
-    // isActive réservé admin
     if ("isActive" in req.body && req.user.role !== "admin") {
         delete req.body.isActive;
     }
 
-    // Category find-or-create logic
     if (req.body.categories) {
         const catIds = await Promise.all(
             req.body.categories.map(cat => categoryService.findOrCreateCategory(cat, "product"))

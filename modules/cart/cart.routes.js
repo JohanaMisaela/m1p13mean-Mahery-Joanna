@@ -45,6 +45,8 @@ router.get("/", protect(), controller.getMyCart);
  *             properties:
  *               productId:
  *                 type: string
+ *               variantId:
+ *                 type: string
  *               quantity:
  *                 type: number
  *                 default: 1
@@ -66,6 +68,10 @@ router.post("/", protect(), validate(validation.addItemToCartSchema), controller
  *       - in: path
  *         name: productId
  *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: variantId
  *         schema:
  *           type: string
  *     requestBody:
@@ -96,6 +102,10 @@ router.put("/:productId", protect(), validate(validation.updateItemQuantitySchem
  *       - in: path
  *         name: productId
  *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: variantId
  *         schema:
  *           type: string
  *     responses:

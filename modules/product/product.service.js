@@ -74,6 +74,12 @@ export const getAllProducts = async (query = {}) => {
         .limit(Number(limit))
         .lean();
 
+    // Population of variants for each product to get price/images for listing
+    const productsWithVariants = await Promise.all(products.map(async (p) => {
+        const variants = await productVariantService.getVariantsByProduct(p._id);
+        return { ...p, variants };
+    }));
+
     const now = new Date();
     const activePromos = await Promotion.find({
         isActive: true,
@@ -81,12 +87,19 @@ export const getAllProducts = async (query = {}) => {
         endDate: { $gte: now }
     }).lean();
 
-    const data = products.map(product => {
+    const data = productsWithVariants.map(product => {
         const promo = activePromos.find(p =>
             p.products?.some(id => id.toString() === product._id.toString())
         );
+
+        // Use first variant for representative data if root is empty
+        const firstVariant = product.variants?.[0];
+
         return {
             ...product,
+            price: product.price || firstVariant?.price || 0,
+            stock: product.stock || product.variants?.reduce((acc, v) => acc + v.stock, 0) || 0,
+            images: (product.images && product.images.length > 0) ? product.images : (firstVariant?.images || []),
             activePromotion: promo ? {
                 name: promo.name,
                 discountPercentage: promo.discountPercentage,
