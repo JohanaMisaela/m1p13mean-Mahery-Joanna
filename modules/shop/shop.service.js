@@ -26,7 +26,7 @@ export const getShops = async (filters = {}, query = {}) => {
     const data = await Shop.find(finalFilter)
         .populate("owner", "name surname email")
         .populate("categories")
-        .populate("favoritedBy", "name surname")
+        .populate("categories")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit));
@@ -38,7 +38,7 @@ export const getShopById = async (id) => {
     return await Shop.findById(id)
         .populate("owner", "name surname email")
         .populate("categories")
-        .populate("favoritedBy", "name surname");
+        .populate("categories");
 };
 
 export const updateShop = async (id, data) => {
