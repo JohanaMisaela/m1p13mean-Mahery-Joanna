@@ -11,7 +11,7 @@ export const updateProfileSchema = z.object({
 export const updatePasswordSchema = z.object({
     body: z.object({
         oldPassword: z.string().min(1),
-        newPassword: z.string().min(6),
+        newPassword: z.string().min(4),
     }),
 });
 
