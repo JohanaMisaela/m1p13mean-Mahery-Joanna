@@ -7,6 +7,7 @@ import {
     listUsers,
     updateStatus,
     getUserById,
+    adminUpdateUser,
 } from "./user.controller.js";
 import { protect, authorize } from "../../core/middlewares/auth.middleware.js";
 import validate from "../../core/middlewares/validate.middleware.js";
@@ -185,5 +186,36 @@ router.put("/change-role/:userId", protect(), authorize("admin"), validate(valid
  *         description: Status updated
  */
 router.put("/update-status/:userId", protect(), validate(validation.updateStatusSchema), updateStatus);
+
+/**
+ * @swagger
+ * /api/user/admin-update/{id}:
+ *   put:
+ *     summary: Update user (admin only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               surname: { type: string }
+ *               email: { type: string }
+ *               role: { type: string, enum: [admin, shop, user, buyer] }
+ *               isActive: { type: boolean }
+ *               contact: { type: string }
+ *     responses:
+ *       200:
+ *         description: User updated
+ */
+router.put("/admin-update/:id", protect(), authorize("admin"), adminUpdateUser);
 
 export default router;

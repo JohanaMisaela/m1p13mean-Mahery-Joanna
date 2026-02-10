@@ -53,7 +53,7 @@ export const updateStatus = asyncHandler(async (req, res) => {
 });
 
 export const adminUpdateUser = asyncHandler(async (req, res) => {
-    const { name, surname, email, role, isActive } = req.body;
-    const user = await userService.updateUser(req.params.id, { name, surname, email, role, isActive });
+    const { name, surname, email, role, isActive, contact } = req.body;
+    const user = await userService.updateUser(req.params.id, { name, surname, email, role, isActive, contact });
     res.json({ message: "User updated successfully", user });
 });
