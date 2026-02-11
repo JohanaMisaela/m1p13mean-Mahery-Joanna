@@ -1,6 +1,7 @@
 import Product from "./product.model.js";
 import * as productVariantService from "../productVariant/productVariant.service.js";
 import Promotion from "../promotion/promotion.model.js";
+import Report from "../report/report.model.js";
 
 export const createProduct = (data) => {
     return Product.create(data);
@@ -74,10 +75,11 @@ export const getAllProducts = async (query = {}) => {
         .limit(Number(limit))
         .lean();
 
-    // Population of variants for each product to get price/images for listing
-    const productsWithVariants = await Promise.all(products.map(async (p) => {
+    // Population of variants and report count for each product
+    const productsWithVariantsAndReports = await Promise.all(products.map(async (p) => {
         const variants = await productVariantService.getVariantsByProduct(p._id);
-        return { ...p, variants };
+        const reportCount = await Report.countDocuments({ targetId: p._id, targetType: 'product' });
+        return { ...p, variants, reportCount };
     }));
 
     const now = new Date();
@@ -87,7 +89,7 @@ export const getAllProducts = async (query = {}) => {
         endDate: { $gte: now }
     }).lean();
 
-    const data = productsWithVariants.map(product => {
+    const data = productsWithVariantsAndReports.map(product => {
         const promo = activePromos.find(p =>
             p.products?.some(id => id.toString() === product._id.toString())
         );
