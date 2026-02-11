@@ -24,6 +24,7 @@ export const getAll = asyncHandler(async (req, res) => {
     const filters = {};
     if (req.query.category) filters.categories = req.query.category;
     if (req.query.isActive) filters.isActive = req.query.isActive === "true";
+    if (req.query.owner) filters.owner = req.query.owner;
 
     const { data, total } = await shopService.getShops(filters, req.query);
 
