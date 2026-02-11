@@ -39,3 +39,16 @@ export const getMyReports = asyncHandler(async (req, res) => {
         totalPages: Math.ceil(total / Number(limit))
     });
 });
+
+export const getShopReports = asyncHandler(async (req, res) => {
+    const { shopId } = req.params;
+    const { page = 1, limit = 50 } = req.query;
+    const { data, total } = await reportService.getShopRelatedReports(shopId, req.query);
+    res.json({
+        data,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+    });
+});

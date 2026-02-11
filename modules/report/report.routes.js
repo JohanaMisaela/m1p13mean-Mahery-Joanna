@@ -77,6 +77,41 @@ router.get("/my", protect(), controller.getMyReports);
 
 /**
  * @swagger
+ * /api/reports/shop/{shopId}:
+ *   get:
+ *     summary: Get reports related to a shop (and its products)
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: shopId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, resolved, dismissed]
+ *       - in: query
+ *         name: targetType
+ *         schema:
+ *           type: string
+ *           enum: [product, shop]
+ *       - in: query
+ *         name: page
+ *         schema: { type: number }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: number }
+ *     responses:
+ *       200:
+ *         description: List of reports
+ */
+router.get("/shop/:shopId", protect(), controller.getShopReports);
+
+/**
+ * @swagger
  * /api/reports:
  *   get:
  *     summary: Get all reports (Admin only)
