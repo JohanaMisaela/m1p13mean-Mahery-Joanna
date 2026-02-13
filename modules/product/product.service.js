@@ -91,9 +91,26 @@ export const getAllProducts = async (query = {}) => {
     }).lean();
 
     const data = productsWithVariantsAndReports.map(product => {
-        const promo = activePromos.find(p =>
-            p.products?.some(id => id.toString() === product._id.toString())
+        // Collect all IDs (product + variants)
+        const relevantIds = [product._id.toString()];
+        if (product.variants && product.variants.length > 0) {
+            product.variants.forEach(v => relevantIds.push(v._id.toString()));
+        }
+
+        // Find all applicable promotions
+        const applicablePromos = activePromos.filter(p =>
+            p.products?.some(id => relevantIds.includes(id.toString()))
         );
+
+        // Sort by discount descending, then name ascending
+        applicablePromos.sort((a, b) => {
+            if (b.discountPercentage !== a.discountPercentage) {
+                return b.discountPercentage - a.discountPercentage;
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        const bestPromo = applicablePromos.length > 0 ? applicablePromos[0] : null;
 
         // Use first variant for representative data if root is empty
         const firstVariant = product.variants?.[0];
@@ -103,12 +120,12 @@ export const getAllProducts = async (query = {}) => {
             price: product.price || firstVariant?.price || 0,
             stock: product.stock || product.variants?.reduce((acc, v) => acc + v.stock, 0) || 0,
             images: (product.images && product.images.length > 0) ? product.images : (firstVariant?.images || []),
-            activePromotion: promo ? {
-                name: promo.name,
-                discountPercentage: promo.discountPercentage,
-                endDate: promo.endDate
+            activePromotion: bestPromo ? {
+                name: bestPromo.name,
+                discountPercentage: bestPromo.discountPercentage,
+                endDate: bestPromo.endDate
             } : null,
-            isOnSale: !!promo
+            isOnSale: !!bestPromo
         };
     });
 
@@ -193,9 +210,37 @@ export const getUserFavorites = async (userId, query = {}) => {
     }).select("products name discountPercentage endDate").lean();
 
     const enrichedData = data.map(product => {
-        const promo = activePromos.find(p =>
+        // We need variants here too for accurate promotion check, but getVariantsByProduct is async map
+        // Since we didn't fetch variants in getUserFavorites initially, we might miss variant promos.
+        // However, usually favorites list might be simpler.
+        // To do it right, we should ideally populate variants here too or at least check if we can.
+        // For now, let's keep it simple and check product ID only for favorites unless requested.
+        // User asked "home", favorites is separate. Let's apply same logic if possible but variants are missing in this function scope.
+        // If variants are needed, we must fetch them.
+
+        // Let's assume for favorites, we check product ID for now, or if we want to be consistent, we should fetch variants.
+        // Given the code structure, fetching variants for favorites might slow it down.
+        // I will stick to product ID for favorites for now to minimize impact unless user complains.
+        // BUT, wait, the user's request "once dn/produtc/id si variant avec promo l afficher iciet appliquer sur le prix" 
+        // implies product details mostly.
+
+        // Actually, let's update getUserFavorites to at least match the style, but without variant fetching it's limited.
+        // I'll leave getUserFavorites as is for now regarding variants to avoid performance hit, 
+        // but I will add the sort logic just in case multiple promos apply to the product ID itself (rare but possible).
+
+        const applicablePromos = activePromos.filter(p =>
             p.products?.some(id => id.toString() === product._id.toString())
         );
+
+        applicablePromos.sort((a, b) => {
+            if (b.discountPercentage !== a.discountPercentage) {
+                return b.discountPercentage - a.discountPercentage;
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        const promo = applicablePromos.length > 0 ? applicablePromos[0] : null;
+
         return {
             ...product,
             activePromotion: promo ? {
