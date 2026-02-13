@@ -36,7 +36,7 @@ const router = express.Router();
  *       201:
  *         description: Category created
  */
-router.post("/", protect(["admin"]), validate(validation.createCategorySchema), controller.create);
+router.post("/", protect(["admin", "shop"]), validate(validation.createCategorySchema), controller.create);
 
 /**
  * @swagger
