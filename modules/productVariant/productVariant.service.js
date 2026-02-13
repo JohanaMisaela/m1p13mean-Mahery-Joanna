@@ -16,6 +16,6 @@ export const getVariantById = (variantId) => {
     return ProductVariant.findById(variantId).populate("product");
 };
 
-export const getVariantsByProduct = (productId) => {
-    return ProductVariant.find({ product: productId, isActive: true }).lean();
+export const getVariantsByProduct = (productId, query = { isActive: true }) => {
+    return ProductVariant.find({ product: productId, ...query }).lean();
 };

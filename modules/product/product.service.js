@@ -77,7 +77,8 @@ export const getAllProducts = async (query = {}) => {
 
     // Population of variants and report count for each product
     const productsWithVariantsAndReports = await Promise.all(products.map(async (p) => {
-        const variants = await productVariantService.getVariantsByProduct(p._id);
+        const variantQuery = isActive === "all" ? {} : { isActive: true };
+        const variants = await productVariantService.getVariantsByProduct(p._id, variantQuery);
         const reportCount = await Report.countDocuments({ targetId: p._id, targetType: 'product' });
         return { ...p, variants, reportCount };
     }));
@@ -123,7 +124,12 @@ export const getProductById = async (id) => {
 
     if (!product) return null;
 
-    const variants = await productVariantService.getVariantsByProduct(id);
+    // For single product, we often want all variants in admin/owner mode
+    // but the service generally defaults to active. 
+    // Let's make it smarter: if this is used for shop management, we might want all.
+    // However, the current callers of getProductById don't pass an isActive flag.
+    // Let's allow getProductById to accept a query param if needed.
+    const variants = await productVariantService.getVariantsByProduct(id, {}); // Default to all for detail view for now to be safe, or we can keep it active-only.
 
     const now = new Date();
     const promo = await Promotion.findOne({

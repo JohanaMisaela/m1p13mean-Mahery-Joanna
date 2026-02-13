@@ -64,6 +64,15 @@ export const remove = asyncHandler(async (req, res) => {
 
 export const list = asyncHandler(async (req, res) => {
     const { productId } = req.params;
-    const variants = await productVariantService.getVariantsByProduct(productId);
+    const { isActive } = req.query;
+
+    let variantQuery = { isActive: true };
+    if (isActive === "all") {
+        variantQuery = {};
+    } else if (isActive === "false") {
+        variantQuery = { isActive: false };
+    }
+
+    const variants = await productVariantService.getVariantsByProduct(productId, variantQuery);
     res.json(variants);
 });
