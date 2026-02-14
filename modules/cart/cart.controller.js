@@ -7,13 +7,14 @@ export const getMyCart = asyncHandler(async (req, res) => {
 });
 
 export const addItem = asyncHandler(async (req, res) => {
-    const { productId, variantId, quantity } = req.body;
+    const { productId, variantId, quantity, promotionId } = req.body;
 
     const cart = await cartService.addToCart(
         req.user._id,
         productId,
         variantId,
-        quantity || 1
+        quantity || 1,
+        promotionId
     );
 
     res.json(cart);

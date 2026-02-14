@@ -14,7 +14,7 @@ export const getCartByUser = async (userId) => {
     return cart;
 };
 
-export const addToCart = async (userId, productId, variantId = null, quantity = 1) => {
+export const addToCart = async (userId, productId, variantId = null, quantity = 1, promotionId = null) => {
     const product = await Product.findById(productId);
     if (!product) throw new Error("Product not found");
 
@@ -39,8 +39,9 @@ export const addToCart = async (userId, productId, variantId = null, quantity = 
 
     if (item) {
         item.quantity += quantity;
+        if (promotionId) item.promotion = promotionId; // Update promotion if provided
     } else {
-        cart.items.push({ product: productId, variant: variantId, quantity });
+        cart.items.push({ product: productId, variant: variantId, quantity, promotion: promotionId });
     }
 
     return cart.save();

@@ -16,6 +16,11 @@ const cartItemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductVariant",
     },
+    promotion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Promotion",
+        default: null
+    }
 });
 
 const cartSchema = new mongoose.Schema(
