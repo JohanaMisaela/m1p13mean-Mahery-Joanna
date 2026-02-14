@@ -5,7 +5,8 @@ import ProductVariant from "../productVariant/productVariant.model.js";
 export const getCartByUser = async (userId) => {
     let cart = await Cart.findOne({ user: userId })
         .populate("items.product")
-        .populate("items.variant");
+        .populate("items.variant")
+        .populate("items.promotion");
 
     if (!cart) {
         cart = await Cart.create({ user: userId, items: [] });
