@@ -45,7 +45,8 @@ export const addToCart = async (userId, productId, variantId = null, quantity = 
         cart.items.push({ product: productId, variant: variantId, quantity, promotion: promotionId });
     }
 
-    return cart.save();
+    await cart.save();
+    return getCartByUser(userId);
 };
 
 export const updateQuantity = async (userId, productId, variantId, quantity) => {
@@ -62,7 +63,8 @@ export const updateQuantity = async (userId, productId, variantId, quantity) => 
     if (!item) throw new Error("Item not found in cart");
 
     item.quantity = quantity;
-    return cart.save();
+    await cart.save();
+    return getCartByUser(userId);
 };
 
 export const removeFromCart = async (userId, productId, variantId) => {
@@ -76,11 +78,13 @@ export const removeFromCart = async (userId, productId, variantId) => {
         return !(pMatch && vMatch);
     });
 
-    return cart.save();
+    await cart.save();
+    return getCartByUser(userId);
 };
 
 export const clearCart = async (userId) => {
     const cart = await getCartByUser(userId);
     cart.items = [];
-    return cart.save();
+    await cart.save();
+    return getCartByUser(userId);
 };
