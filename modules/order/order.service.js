@@ -78,6 +78,7 @@ export const getOrdersByUser = async (userId, query = {}) => {
         .populate("items.product")
         .populate("items.variant")
         .populate("shop")
+        .populate("shippingAddress")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit));
@@ -95,6 +96,7 @@ export const getOrdersByShop = async (shopId, query = {}) => {
         .populate("items.product")
         .populate("items.variant")
         .populate("user")
+        .populate("shippingAddress")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit));
