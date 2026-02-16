@@ -22,7 +22,8 @@ export const addItem = asyncHandler(async (req, res) => {
 
 export const updateItem = asyncHandler(async (req, res) => {
     const { quantity } = req.body;
-    const { productId, variantId } = req.params;
+    const { productId } = req.params;
+    const { variantId } = req.query;
 
     const cart = await cartService.updateQuantity(
         req.user._id,
@@ -35,13 +36,16 @@ export const updateItem = asyncHandler(async (req, res) => {
 });
 
 export const removeItem = asyncHandler(async (req, res) => {
-    const { productId, variantId } = req.params;
+    const { productId } = req.params;
+    const { variantId } = req.query;
 
     const cart = await cartService.removeFromCart(
         req.user._id,
         productId,
         variantId
     );
+
+
 
     res.json(cart);
 });
