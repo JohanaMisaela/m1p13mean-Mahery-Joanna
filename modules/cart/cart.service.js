@@ -50,10 +50,7 @@ export const addToCart = async (userId, productId, variantId = null, quantity = 
 };
 
 export const updateQuantity = async (userId, productId, variantId, quantity) => {
-    console.log(`[CartService] UpdateQuantity: User=${userId}, Product=${productId}, Variant=${variantId}, Quantity=${quantity}`);
-
     const cart = await getCartByUser(userId);
-    console.log(`[CartService] Cart found with ${cart.items.length} items`);
 
     const item = cart.items.find((i) => {
         const pMatch = (i.product._id || i.product).toString() === productId;
@@ -64,16 +61,12 @@ export const updateQuantity = async (userId, productId, variantId, quantity) => 
     });
 
     if (!item) {
-        console.error(`[CartService] Item not found for Prod=${productId} Var=${variantId}`);
         throw new Error("Item not found in cart");
     }
 
-    console.log(`[CartService] Item found. Old Qty=${item.quantity}, New Qty=${quantity}`);
     item.quantity = quantity;
 
-    const savedCart = await cart.save();
-    console.log(`[CartService] Cart saved. Item Qty in DB object=${savedCart.items.find(i => i._id.toString() === item._id.toString())?.quantity}`);
-
+    await cart.save();
     return getCartByUser(userId);
 };
 
