@@ -1,6 +1,7 @@
 import Order from "./order.model.js";
 import User from "../user/user.model.js";
 import Product from "../product/product.model.js";
+import Shop from "../shop/shop.model.js";
 import ProductVariant from "../productVariant/productVariant.model.js";
 import { getActiveProductPromotion } from "../promotion/promotion.service.js";
 
@@ -70,9 +71,34 @@ export const createOrder = async (userId, shopId, items, addressId) => {
 };
 
 export const getOrdersByUser = async (userId, query = {}) => {
-    const { page = 1, limit = 50 } = query;
+    console.log('[OrderService] getOrdersByUser called with:', { userId, query });
+    const { page = 1, limit = 50, status, shop, item, minTotal, maxTotal } = query;
     const skip = (Number(page) - 1) * Number(limit);
     const filter = { user: userId };
+
+    if (status) {
+        filter.status = status;
+    }
+
+    if (minTotal || maxTotal) {
+        filter.totalAmount = {};
+        if (minTotal) filter.totalAmount.$gte = Number(minTotal);
+        if (maxTotal) filter.totalAmount.$lte = Number(maxTotal);
+    }
+
+    if (shop) {
+        const shops = await Shop.find({
+            name: { $regex: shop, $options: "i" }
+        }).select("_id");
+        filter.shop = { $in: shops.map(s => s._id) };
+    }
+
+    if (item) {
+        const products = await Product.find({
+            name: { $regex: item, $options: "i" }
+        }).select("_id");
+        filter["items.product"] = { $in: products.map(p => p._id) };
+    }
 
     const total = await Order.countDocuments(filter);
     const data = await Order.find(filter)
