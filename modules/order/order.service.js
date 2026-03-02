@@ -44,8 +44,16 @@ export const createOrder = async (userId, shopId, items, addressId) => {
       );
     }
 
-    // Check for active promotion
-    const promotion = await getActiveProductPromotion(product._id);
+    // Check for active promotion (priority to variant, then product)
+    let promotion = null;
+    if (variant) {
+      promotion = await getActiveProductPromotion(variant._id);
+    }
+
+    if (!promotion) {
+      promotion = await getActiveProductPromotion(product._id);
+    }
+
     let finalPrice = basePrice;
     let appliedPromoId = null;
 
@@ -63,6 +71,8 @@ export const createOrder = async (userId, shopId, items, addressId) => {
       price: finalPrice,
       originalPrice: basePrice,
       promotion: appliedPromoId,
+      promotionName: promotion ? promotion.name : null,
+      promotionDiscount: promotion ? promotion.discountPercentage : null,
     });
   }
 

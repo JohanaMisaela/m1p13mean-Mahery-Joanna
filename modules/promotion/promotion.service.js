@@ -70,11 +70,11 @@ export const removeProductsFromPromotion = async (promotionId, productIds) => {
   );
 };
 
-// Helper to find an active promotion for a product
-export const getActiveProductPromotion = async (productId) => {
+// Helper to find an active promotion for a product or variant
+export const getActiveProductPromotion = async (itemId) => {
   const now = new Date();
   return Promotion.findOne({
-    products: productId,
+    products: itemId,
     isActive: true,
     startDate: { $lte: now },
     endDate: { $gte: now },
