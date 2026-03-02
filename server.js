@@ -20,28 +20,30 @@ import reportRoutes from "./modules/report/report.routes.js";
 import promotionRoutes from "./modules/promotion/promotion.routes.js";
 import categoryRoutes from "./modules/category/category.routes.js";
 import productVariantRoutes from "./modules/productVariant/productVariant.routes.js";
+import chatRoutes from "./modules/chat/chat.routes.js";
 
 import connectDB from "./core/config/db.js";
 import { swaggerSetup } from "./core/config/swagger.js";
 import errorHandler from "./core/middlewares/error.middleware.js";
-
 
 connectDB();
 
 const app = express();
 
 app.use(
-    cors({
-        origin: true,
-        credentials: true,
-    })
+  cors({
+    origin: true,
+    credentials: true,
+  }),
 );
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-app.get("/", (req, res) => res.json({ status: "success", message: "E-commerce API is online" }));
+app.get("/", (req, res) =>
+  res.json({ status: "success", message: "E-commerce API is online" }),
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
@@ -57,6 +59,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/promotions", promotionRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/product-variants", productVariantRoutes);
+app.use("/api/chat", chatRoutes);
 
 swaggerSetup(app);
 

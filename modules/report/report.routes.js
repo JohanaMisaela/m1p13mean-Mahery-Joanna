@@ -50,7 +50,12 @@ const router = express.Router();
  *       201:
  *         description: Report created successfully
  */
-router.post("/:targetType/:targetId", protect(), validate(validation.createReportSchema), controller.createReport);
+router.post(
+  "/:targetType/:targetId",
+  protect(),
+  validate(validation.createReportSchema),
+  controller.createReport,
+);
 
 /**
  * @swagger
@@ -167,6 +172,16 @@ router.get("/", protect(["admin"]), controller.getReports);
  *       200:
  *         description: Report status updated
  */
-router.put("/:id", protect(["admin"]), validate(validation.updateReportSchema), controller.updateStatus);
+router.put(
+  "/:id",
+  protect(["admin"]),
+  validate(validation.updateReportSchema),
+  controller.updateStatus,
+);
+router.get(
+  "/count/pending/:shopId",
+  protect(["admin"]),
+  controller.getPendingCount,
+);
 
 export default router;
