@@ -187,6 +187,7 @@ export const getOrdersByShop = async (shopId, query = {}) => {
     .populate("items.variant")
     .populate("items.promotion")
     .populate("user")
+    .populate("shop")
     .populate("shippingAddress")
     .sort({ createdAt: -1 })
     .skip(skip)
