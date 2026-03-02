@@ -54,7 +54,12 @@ router.get("/", protect(), controller.getMyCart);
  *       200:
  *         description: Item added
  */
-router.post("/", protect(), validate(validation.addItemToCartSchema), controller.addItem);
+router.post(
+  "/",
+  protect(),
+  validate(validation.addItemToCartSchema),
+  controller.addItem,
+);
 
 /**
  * @swagger
@@ -88,7 +93,12 @@ router.post("/", protect(), validate(validation.addItemToCartSchema), controller
  *       200:
  *         description: Quantity updated
  */
-router.put("/:productId", protect(), validate(validation.updateItemQuantitySchema), controller.updateItem);
+router.put(
+  "/:productId",
+  protect(),
+  validate(validation.updateItemQuantitySchema),
+  controller.updateItem,
+);
 
 /**
  * @swagger
@@ -113,5 +123,19 @@ router.put("/:productId", protect(), validate(validation.updateItemQuantitySchem
  *         description: Item removed
  */
 router.delete("/:productId", protect(), controller.removeItem);
+
+/**
+ * @swagger
+ * /api/cart:
+ *   delete:
+ *     summary: Clear cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart cleared
+ */
+router.delete("/", protect(), controller.clearCart);
 
 export default router;
