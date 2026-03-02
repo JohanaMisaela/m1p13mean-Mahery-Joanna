@@ -129,6 +129,7 @@ export const getOrdersByUser = async (userId, query = {}) => {
     .populate("items.product")
     .populate("items.variant")
     .populate("items.promotion")
+    .populate("user")
     .populate("shop")
     .populate("shippingAddress")
     .sort({ createdAt: -1 })
